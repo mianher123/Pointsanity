@@ -49,11 +49,13 @@ public class PointsanityActivity extends Activity {
 	private ImageView mShareBtn;
 	private ImageView mOrderBtn;
 	private Button mConnect;
+	private Button mShop;
 	private Facebook mFacebook;
 	private TextView mFBID;
 	//private TextView mTitle;
 	private TextView mEnter;
-	static boolean flag=true;
+	
+	
 	/*private ListView mListView;
 	private ArrayList<String> list;
 	private ArrayList<String> IDs;
@@ -85,6 +87,7 @@ public class PointsanityActivity extends Activity {
         mOrderBtn = (ImageView) findViewById(R.id.imageView2);
         mShareBtn = (ImageView) findViewById(R.id.imageView3);
         mConnect = (Button) findViewById(R.id.button3);
+        mShop = (Button) findViewById(R.id.button1);
         mFBID = (TextView) findViewById(R.id.fbID);
         //mTitle = (TextView) findViewById(R.id.title);
         mEnter = (TextView) findViewById(R.id.enter);
@@ -171,6 +174,17 @@ public class PointsanityActivity extends Activity {
                		}  
                		  };  	
         		new Thread(ConnectRun).start(); 
+        		
+        	};
+       	});
+       	
+       	mShop.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		Log.d("Debug","In mShop");
+        		
+        		Intent intent = new Intent();
+		    	intent.setClass(PointsanityActivity.this,ShopGive.class);
+		    	startActivity(intent);
         		
         	};
        	});

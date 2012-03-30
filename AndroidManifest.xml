@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name="Beam"></activity>
+        <activity android:name="ShopGive"></activity>
     </application>
 
 </manifest>

@@ -140,7 +140,14 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
         // only one message sent during the beam
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         // record 0 contains the MIME type, record 1 is the AAR, if present
-        mInfoText.setText(new String(msg.getRecords()[0].getPayload()));
+        String text = new String(msg.getRecords()[0].getPayload());
+        //mInfoText.setText(text);
+        
+        if(text.startsWith("POINTS")){
+        	String[] part = text.split(" ");
+        	mInfoText.setText("得到了"+part[1]+"點");
+        	
+        }
     }
 
     /**
