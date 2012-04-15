@@ -11,10 +11,13 @@
 
     <application
         android:icon="@drawable/seal"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        >
+        
         <activity
             android:name=".PointsanityActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,6 +31,7 @@
         </activity>
         <activity android:name="Beam"></activity>
         <activity android:name="ShopGive"></activity>
+        <activity android:name="GridTest"></activity>
     </application>
 
 </manifest>

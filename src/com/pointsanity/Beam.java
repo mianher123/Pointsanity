@@ -18,6 +18,7 @@ package com.pointsanity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -30,9 +31,14 @@ import android.os.Message;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,20 +49,38 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
         OnNdefPushCompleteCallback {
     NfcAdapter mNfcAdapter;
     TextView mInfoText;
+    ImageView mNFC;
     private static final int MESSAGE_SENT = 1;
-
+    String FBID;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.beam);
-
+        
+       
+        SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+       	String FBID = settings.getString("ID", "");
+       	mNFC = (ImageView) findViewById(R.id.nfcView);
         mInfoText = (TextView) findViewById(R.id.textView1);
+        mInfoText.setText("My FBID is "+FBID);
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null) {
-            mInfoText = (TextView) findViewById(R.id.textView1);
-            mInfoText.setText("NFC is not available on this device.");
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
+            
+            mNFC.setImageResource(R.drawable.nfc_off);
+            
         }
+        else
+        	mNFC.setImageResource(R.drawable.nfc_on);
+        mNFC.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		Toast.makeText(getApplicationContext(), "Please activate NFC and press Back to return to the application!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+        		
+        	};
+       	});
+        
         // Register callback to set NDEF message
         mNfcAdapter.setNdefPushMessageCallback(this, this);
         // Register callback to listen for message-sent success
@@ -71,8 +95,9 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
         //Time time = new Time();
         //time.setToNow();
         //String text = ("Beam me up!\n\n" + "Beam Time: " + time.format("%H:%M:%S"));
-    	
-    	String text ="I push this for you!";
+    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+       	FBID = settings.getString("ID", "");
+    	String text ="ID "+FBID;
         NdefMessage msg = new NdefMessage(
                 new NdefRecord[] { createMimeRecord(
                         "application/com.pointsanity", text.getBytes())
@@ -113,21 +138,37 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("Debug","Beam onResume");
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
+            
+            mNFC.setImageResource(R.drawable.nfc_off);
+            
+        }
+        else
+        	mNFC.setImageResource(R.drawable.nfc_on);
+        SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+        settings.edit().putString("SHOP", "").commit();
         // Check to see that the Activity started due to an Android Beam
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             processIntent(getIntent());
-            
+            Log.d("Debug","Beam onResume1");
         }
     }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        // Check to see that the Activity started due to an Android Beam
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-    }
+    
     @Override
     public void onNewIntent(Intent intent) {
         // onResume gets called after this to handle the intent
+    	Log.d("Debug","Beam onNewIntent");
+    	mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            mInfoText = (TextView) findViewById(R.id.textView1);
+            mInfoText.setText("NFC is not available on this device.");
+            mNFC.setImageResource(R.drawable.nfc_off);
+            
+        }
+        else
+        	mNFC.setImageResource(R.drawable.nfc_on);
         setIntent(intent);
     }
 
@@ -142,11 +183,14 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
         // record 0 contains the MIME type, record 1 is the AAR, if present
         String text = new String(msg.getRecords()[0].getPayload());
         //mInfoText.setText(text);
-        
-        if(text.startsWith("POINTS")){
+        SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+       	String FBID = settings.getString("ID", "");
+        if(text.startsWith("INFO")){
         	String[] part = text.split(" ");
-        	mInfoText.setText("得到了"+part[1]+"點");
-        	
+        	if(part[1].equals(FBID)){
+        		mInfoText.setText("已更新點數，您共有"+part[2]+"點");
+        		settings.edit().putString("NUMPOINTS", part[2]).commit();
+        	}
         }
     }
 

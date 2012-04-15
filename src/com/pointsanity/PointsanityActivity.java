@@ -72,11 +72,11 @@ public class PointsanityActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        //PointsanityActivity.this.getWindow().setBackgroundDrawableResource(R.drawable.mainpage);
         setContentView(R.layout.main);
         Log.d("DebugLog","setContentView");
         
-        PointsanityActivity.this.getWindow().setBackgroundDrawableResource(R.drawable.mainpage);
+        
         
         
         
@@ -104,7 +104,7 @@ public class PointsanityActivity extends Activity {
        	String FBID = settings.getString("ID", "");
         String FBNAME = settings.getString("NAME", "");
        	if((! "".equals(FBID))&&(! "".equals(FBNAME))){
-       		mFBID.setText("Hello: "+FBNAME);
+       		mFBID.setText("Hello, "+FBNAME);
 			mPickBtn.setVisibility(View.VISIBLE);
 	        mShareBtn.setVisibility(View.VISIBLE);
 	        mOrderBtn.setVisibility(View.VISIBLE);
@@ -181,15 +181,23 @@ public class PointsanityActivity extends Activity {
        	mShop.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
         		Log.d("Debug","In mShop");
-        		
         		Intent intent = new Intent();
 		    	intent.setClass(PointsanityActivity.this,ShopGive.class);
 		    	startActivity(intent);
         		
         	};
        	});
-       	
        	mShareBtn.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		Log.d("Debug","In mShare");
+        		Intent intent = new Intent();
+		    	intent.setClass(PointsanityActivity.this,GridTest.class);
+		    	startActivity(intent);
+        		
+        	};
+       	});
+       	
+       	mPickBtn.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
         		Log.d("Debug","In mShareBtn");
         		Intent intent = new Intent();
@@ -202,14 +210,33 @@ public class PointsanityActivity extends Activity {
         		
        	
     }
+    @Override  
+    protected void onNewIntent(Intent intent) {  
+        // TODO Auto-generated method stub  
+        super.onNewIntent(intent);  
+        Log.d("Debug","PointsanityActivity onNewIntent");
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+        	Log.d("Debug","PointsanityActivity onNewIntent1");
+        	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+           	String shop = settings.getString("SHOP", "");
+           	Intent mintent = shop.equals("true") ? intent.setClass(PointsanityActivity.this,ShopGive.class) : intent.setClass(PointsanityActivity.this,Beam.class);
+	    	startActivity(mintent);
+	    	getIntent().setAction("");
+        }  
+    }  
     public void onResume() {
         super.onResume();
         // Check to see that the Activity started due to an Android Beam
+        Log.d("Debug","PointsanityActivity onResume");
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-        	Intent intent = getIntent().setClass(PointsanityActivity.this,Beam.class);
+        	Log.d("Debug","PointsanityActivity onResume1");
+        	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+           	String shop = settings.getString("SHOP", "");
+           	Intent intent = shop.equals("true") ? getIntent().setClass(PointsanityActivity.this,ShopGive.class) : getIntent().setClass(PointsanityActivity.this,Beam.class);
 	    	startActivity(intent);
 	    	getIntent().setAction("");
         }
+        
     }
     private RequestListener requestListener = new RequestListener(){
 		public void onComplete(String response,Object state){
@@ -224,7 +251,7 @@ public class PointsanityActivity extends Activity {
 				
 				PointsanityActivity.this.runOnUiThread(new Runnable(){
 					public void run(){
-						mFBID.setText("Hello: "+name);
+						mFBID.setText("Hello, "+name);
 						mPickBtn.setVisibility(View.VISIBLE);
 				        mShareBtn.setVisibility(View.VISIBLE);
 				        mOrderBtn.setVisibility(View.VISIBLE);
