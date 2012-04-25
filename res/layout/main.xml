@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" android:background="@drawable/mainpage">
+    android:orientation="vertical" android:background="@drawable/main_bg">
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
@@ -33,7 +33,7 @@
             android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/share" android:layout_centerHorizontal="true" android:layout_marginTop="285sp"/>
+            android:src="@drawable/exchange" android:layout_centerHorizontal="true" android:layout_marginTop="285sp"/>
 
         <TextView
             android:id="@+id/fbID"

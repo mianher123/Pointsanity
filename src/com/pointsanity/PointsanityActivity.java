@@ -46,7 +46,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class PointsanityActivity extends Activity {
     /** Called when the activity is first created. */
 	private ImageView mPickBtn;
-	private ImageView mShareBtn;
+	private ImageView mExchangeBtn;
 	private ImageView mOrderBtn;
 	private Button mConnect;
 	private Button mShop;
@@ -85,7 +85,7 @@ public class PointsanityActivity extends Activity {
         
         mPickBtn = (ImageView) findViewById(R.id.imageView1);
         mOrderBtn = (ImageView) findViewById(R.id.imageView2);
-        mShareBtn = (ImageView) findViewById(R.id.imageView3);
+        mExchangeBtn = (ImageView) findViewById(R.id.imageView3);
         mConnect = (Button) findViewById(R.id.button3);
         mShop = (Button) findViewById(R.id.button1);
         mFBID = (TextView) findViewById(R.id.fbID);
@@ -94,7 +94,7 @@ public class PointsanityActivity extends Activity {
         
         mPickBtn.setVisibility(View.INVISIBLE);
         mOrderBtn.setVisibility(View.INVISIBLE);
-        mShareBtn.setVisibility(View.INVISIBLE);
+        mExchangeBtn.setVisibility(View.INVISIBLE);
         mFBID.setVisibility(View.INVISIBLE);
         //mTitle.setVisibility(View.INVISIBLE);
         
@@ -106,7 +106,7 @@ public class PointsanityActivity extends Activity {
        	if((! "".equals(FBID))&&(! "".equals(FBNAME))){
        		mFBID.setText("Hello, "+FBNAME);
 			mPickBtn.setVisibility(View.VISIBLE);
-	        mShareBtn.setVisibility(View.VISIBLE);
+	        mExchangeBtn.setVisibility(View.VISIBLE);
 	        mOrderBtn.setVisibility(View.VISIBLE);
 	        mFBID.setVisibility(View.VISIBLE);
 	        mEnter.setVisibility(View.INVISIBLE);
@@ -170,7 +170,7 @@ public class PointsanityActivity extends Activity {
         	       	  
                		public void run() {  
                		    // TODO Auto-generated method stub  
-               			SocketClient("草尼瑪");  
+               			SocketClient("Test string");  
                		}  
                		  };  	
         		new Thread(ConnectRun).start(); 
@@ -180,6 +180,7 @@ public class PointsanityActivity extends Activity {
        	
        	mShop.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
+        		
         		Log.d("Debug","In mShop");
         		Intent intent = new Intent();
 		    	intent.setClass(PointsanityActivity.this,ShopGive.class);
@@ -187,9 +188,10 @@ public class PointsanityActivity extends Activity {
         		
         	};
        	});
-       	mShareBtn.setOnClickListener(new OnClickListener(){
+       	mExchangeBtn.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
-        		Log.d("Debug","In mShare");
+        		mExchangeBtn.setImageResource(R.drawable.exchange_down);
+        		Log.d("Debug","In mExchange");
         		Intent intent = new Intent();
 		    	intent.setClass(PointsanityActivity.this,GridTest.class);
 		    	startActivity(intent);
@@ -199,7 +201,18 @@ public class PointsanityActivity extends Activity {
        	
        	mPickBtn.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
-        		Log.d("Debug","In mShareBtn");
+        		mPickBtn.setImageResource(R.drawable.pick_down);
+        		Log.d("Debug","In mPick");
+        		Intent intent = new Intent();
+		    	intent.setClass(PointsanityActivity.this,ShopList.class);
+		    	startActivity(intent);
+        		
+        	};
+       	});
+       	mOrderBtn.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		mOrderBtn.setImageResource(R.drawable.order_down);
+        		Log.d("Debug","In mOrder");
         		Intent intent = new Intent();
 		    	intent.setClass(PointsanityActivity.this,Beam.class);
 		    	startActivity(intent);
@@ -227,6 +240,9 @@ public class PointsanityActivity extends Activity {
     public void onResume() {
         super.onResume();
         // Check to see that the Activity started due to an Android Beam
+        mPickBtn.setImageResource(R.drawable.pick);
+        mExchangeBtn.setImageResource(R.drawable.exchange);
+        mOrderBtn.setImageResource(R.drawable.order);
         Log.d("Debug","PointsanityActivity onResume");
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
         	Log.d("Debug","PointsanityActivity onResume1");
@@ -253,7 +269,7 @@ public class PointsanityActivity extends Activity {
 					public void run(){
 						mFBID.setText("Hello, "+name);
 						mPickBtn.setVisibility(View.VISIBLE);
-				        mShareBtn.setVisibility(View.VISIBLE);
+				        mExchangeBtn.setVisibility(View.VISIBLE);
 				        mOrderBtn.setVisibility(View.VISIBLE);
 				        mFBID.setVisibility(View.VISIBLE);
 				        //mTitle.setVisibility(View.VISIBLE);
@@ -302,20 +318,20 @@ public class PointsanityActivity extends Activity {
 	
 	
 	private void SocketClient(String s){
-		String address = "122.116.119.134";// 連線的ip
-	    int port = 5566;// 連線的port
+		String address = "122.116.119.134";// ����p
+	    int port = 5566;// ����ort
 	    Socket client = new Socket();
 	       
         InetSocketAddress isa = new InetSocketAddress(address, port);
         /*try {
 			server=new ServerSocket(7788);
 		} catch (IOException e1) {
-			System.out.println("serverSocket建立有問題 !");
+			System.out.println("serverSocket撱箇���憿�!");
             System.out.println("IOException :" + e1.toString());
 		}*/
         
         try {
-            client.connect(isa, 15000);
+        	client.connect(isa, 15000);
             BufferedOutputStream out = new BufferedOutputStream(client
                     .getOutputStream());
             Log.d("Debug","已得到out");
@@ -344,30 +360,29 @@ public class PointsanityActivity extends Activity {
             /*synchronized (server) {
                 socket = server.accept();
             }*/
-           // System.out.println("取得連線 : InetAddress = " + socket.getInetAddress());
-            //Log.d("Debug","取得連線 : InetAddress = " + socket.getInetAddress());
-            // TimeOut時間
+           // System.out.println("����� : InetAddress = " + socket.getInetAddress());
+            //Log.d("Debug","����� : InetAddress = " + socket.getInetAddress());
+            // TimeOut��
             //socket.setSoTimeout(15000);
 
             /*in = new java.io.BufferedInputStream(socket.getInputStream());
             byte[] b = new byte[1024];
             String data = "";
             int length;
-            while ((length = in.read(b)) > 0)// <=0的話就是結束了
-            {
+            while ((length = in.read(b)) > 0)// <=0�店撠望蝯�鈭�            {
                 data += new String(b, 0, length);
             }
-            Log.d("Debug","我取得的值:" + data);
-            //System.out.println("我取得的值:" + data);
+            Log.d("Debug","��敺���" + data);
+            //System.out.println("��敺���" + data);
             in.close();
             in = null;
 			*/
             client.close();
             client = null;
-            Log.d("Debug","關閉socket");
+            Log.d("Debug","SocketClient finished");
             
         } catch (java.io.IOException e) {
-            System.out.println("Socket連線有問題 !");
+            System.out.println("Socket has some problem!");
             System.out.println("IOException :" + e.toString());
         }
     

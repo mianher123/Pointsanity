@@ -17,8 +17,10 @@
 package com.pointsanity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -32,38 +34,63 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+
+import com.pointsanity.GridTest.ViewHolder;
+
+
 
 
 public class Beam extends Activity implements CreateNdefMessageCallback,
         OnNdefPushCompleteCallback {
+	GridView pointsGrid;
+    TextView cardInfo;
+    GridAdapter gridAdapter;
     NfcAdapter mNfcAdapter;
-    TextView mInfoText;
+    //TextView mInfoText;
     ImageView mNFC;
+    ImageView mShop;
     private static final int MESSAGE_SENT = 1;
     String FBID;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.beam);
+        //setContentView(R.layout.beam);
+        setContentView(R.layout.pointsgrid);
+        pointsGrid = (GridView) findViewById(R.id.PointsGrid);
+        cardInfo = (TextView) findViewById(R.id.CardInfo);
+        mShop = (ImageView) findViewById(R.id.shopView);
         
-       
+        String uri = "drawable/land";
+		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		mShop.setImageDrawable(getResources().getDrawable(imageResource));
+		InfoUpdate();       
+		
         SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
        	String FBID = settings.getString("ID", "");
+       	
        	mNFC = (ImageView) findViewById(R.id.nfcView);
+       	/*
         mInfoText = (TextView) findViewById(R.id.textView1);
         mInfoText.setText("My FBID is "+FBID);
+        */
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
@@ -86,6 +113,116 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
         // Register callback to listen for message-sent success
         mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
     }
+    
+    private void InfoUpdate(){
+    	gridAdapter = new GridAdapter();
+		
+    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+		int num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("NUMPOINTS", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("NUMPOINTS", ""+0).commit();
+		}
+		int num_cards = num_points / 10;
+		for(int i=0;i<10;i++){
+			if(i<(num_points % 10)){
+			 gridAdapter.addItem(getResources().getDrawable(R.drawable.seal));
+			}
+			else
+				gridAdapter.addItem(getResources().getDrawable(R.drawable.empty));
+		}
+		cardInfo.setText("±z¤w¶°º¡"+num_cards+"±i¶°ÂI¥d");
+		pointsGrid.setAdapter(gridAdapter);
+    	
+    	
+    }
+    
+    
+    class ViewHolder {
+		ImageView imageview;
+		int id;
+	}
+    
+    public class GridAdapter extends BaseAdapter {
+		private LayoutInflater mInflater;
+		ArrayList<Drawable> drawables = new ArrayList<Drawable>();
+		Context mContext;
+		FileInputStream fis;
+
+		public GridAdapter() {
+			mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		}
+
+		public int getCount() {
+			return drawables.size();
+		}
+
+		public Object getItem(int position) {
+			return position;
+		}
+
+		public long getItemId(int position) {
+			return position;
+		}
+		public void setItem(int index,Drawable item) {
+			drawables.set(index,item);
+		}
+		public void addItem(Drawable item) {
+			drawables.add(item);
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder holder;
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater.inflate(R.layout.griditem, null);
+				holder.imageview = (ImageView) convertView
+						.findViewById(R.id.thumbImage);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
+			// holder.checkbox.setId(position);
+			holder.imageview.setId(position);
+			/*
+			 * holder.checkbox.setOnClickListener(new OnClickListener() {
+			 * 
+			 * public void onClick(View v) { // TODO Auto-generated method stub
+			 * CheckBox cb = (CheckBox) v; int id = cb.getId(); if
+			 * (photoselection[id]){ cb.setChecked(false); photoselection[id] =
+			 * false; //Toast.makeText(MyCustomActivity.this, "onClick",
+			 * Toast.LENGTH_SHORT).show(); } else { cb.setChecked(true);
+			 * photoselection[id] = true;
+			 * //Toast.makeText(MyCustomActivity.this, "onClick",
+			 * Toast.LENGTH_SHORT).show(); } } });
+			 */
+			holder.imageview.setOnClickListener(new OnClickListener() {
+
+				public void onClick(View v) {
+					
+					
+
+				}
+			});
+			// holder.imageview.setImageBitmap(thumbnails[position]);
+			holder.imageview.setImageDrawable(drawables.get(position));
+			
+			// holder.imageview.setImageResource(R.drawable.ic_launcher);
+			// holder.imageview.setLayoutParams(new CoverFlow.LayoutParams(100,
+			// 100));
+
+			holder.imageview.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+			// holder.checkbox.setChecked(photoselection[position]);
+			holder.id = position;
+			// BitmapDrawable drawable = (BitmapDrawable)
+			// holder.imageview.getDrawable();
+			// drawable.setAntiAlias(true);
+			return convertView;
+		}
+	}
 
 
     /**
@@ -162,8 +299,8 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
     	Log.d("Debug","Beam onNewIntent");
     	mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null) {
-            mInfoText = (TextView) findViewById(R.id.textView1);
-            mInfoText.setText("NFC is not available on this device.");
+            //mInfoText = (TextView) findViewById(R.id.textView1);
+            //mInfoText.setText("NFC is not available on this device.");
             mNFC.setImageResource(R.drawable.nfc_off);
             
         }
@@ -187,11 +324,13 @@ public class Beam extends Activity implements CreateNdefMessageCallback,
        	String FBID = settings.getString("ID", "");
         if(text.startsWith("INFO")){
         	String[] part = text.split(" ");
-        	if(part[1].equals(FBID)){
-        		mInfoText.setText("å·²æ›´æ–°é»žæ•¸ï¼Œæ‚¨å…±æœ‰"+part[2]+"é»ž");
-        		settings.edit().putString("NUMPOINTS", part[2]).commit();
+        	if(part[2].equals(FBID)){
+        		//mInfoText.setText("You have "+part[3]+" points.");
+        		settings.edit().putString("NUMPOINTS", part[3]).commit();
         	}
+        	InfoUpdate();
         }
+        
     }
 
     /**

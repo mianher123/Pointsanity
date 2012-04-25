@@ -1,16 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="fill_parent"
-	android:background="@drawable/seal_bg">
+	android:background="@drawable/seal_bg2">
+
 	<GridView
 	    android:id="@+id/PointsGrid"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
+	    android:layout_width="300sp"
+	    android:layout_height="400sp"
 	    android:columnWidth="100sp"
 	    
-	    android:gravity="center"
-	    android:horizontalSpacing="10sp"
+	    android:horizontalSpacing="0sp"
 	    android:numColumns="3"
 	    android:stretchMode="spacingWidth"
-	    android:verticalSpacing="10sp" android:layout_centerInParent="true"/>
+	    android:verticalSpacing="0sp" 
+	    android:layout_marginTop="50sp" android:layout_centerHorizontal="true"/>
+
+	<TextView
+	    android:id="@+id/CardInfo"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/PointsGrid"
+	    android:layout_alignLeft="@+id/PointsGrid"
+	    android:text=""
+	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<ImageView
+		    android:id="@+id/shopView"
+		    android:layout_width="70sp"
+		    android:layout_height="40sp"
+		    android:layout_alignParentLeft="true"
+		    android:layout_alignParentTop="true"
+		    android:src="@drawable/hand" 
+		    android:layout_marginLeft="10sp"
+		    android:layout_marginTop="10sp"/>
+
+	<RelativeLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="match_parent"
+	    android:layout_alignParentLeft="true"
+	    android:layout_below="@+id/PointsGrid" >
+
+		<ImageView
+		    android:id="@+id/nfcView"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/back" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"/>
+
+	</RelativeLayout>
+
 </RelativeLayout>

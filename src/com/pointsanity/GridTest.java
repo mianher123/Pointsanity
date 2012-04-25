@@ -59,18 +59,34 @@ import java.util.ArrayList;
 
 public class GridTest extends Activity{
     GridView pointsGrid;
+    TextView cardInfo;
     GridAdapter gridAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.pointsgrid);
         pointsGrid = (GridView) findViewById(R.id.PointsGrid);
-       
+        cardInfo = (TextView) findViewById(R.id.CardInfo);
         gridAdapter = new GridAdapter();
 		pointsGrid.setAdapter(gridAdapter);
-		for(int i=0;i<19;i++)
-			gridAdapter.addItem(getResources().getDrawable(R.drawable.seal));
+		SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+		int num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("NUMPOINTS", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("NUMPOINTS", ""+0).commit();
+		}
+		int num_cards = num_points / 10;
+		for(int i=0;i<10;i++){
+			if(i<(num_points % 10))
+				gridAdapter.addItem(getResources().getDrawable(R.drawable.seal));
+			else
+				gridAdapter.addItem(getResources().getDrawable(R.drawable.empty));
+		}
+		cardInfo.setText("您已集滿"+num_cards+"張集點卡");
 		
     }
     
