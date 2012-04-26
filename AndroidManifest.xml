@@ -9,7 +9,9 @@
     <uses-permission android:name="android.permission.NFC"/>
     <uses-feature android:name="android.hardware.nfc"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+    
     <application
         android:icon="@drawable/seal"
         android:label="@string/app_name"
@@ -34,6 +36,8 @@
         <activity android:name="ShopGive"></activity>
         <activity android:name="GridTest"></activity>
         <activity android:name="ShopList"></activity>
+        <activity android:name="Map"></activity>
+        <uses-library android:name="com.google.android.maps" android:required="true"></uses-library>
     </application>
 
 </manifest>

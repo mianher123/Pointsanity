@@ -8,24 +8,50 @@
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="400sp" android:layout_marginLeft="10sp">
+        android:layout_height="490sp" android:layout_marginLeft="10sp">
 
     </ListView>
 
-	<RelativeLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-		<ImageView
-		    android:id="@+id/nfcView1"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/back" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"/>
-		<ImageView
-		    android:id="@+id/wifiView1"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/back" android:layout_alignParentBottom="true" android:layout_alignParentRight="true"/>
-	</RelativeLayout>
+        <ImageView
+            android:id="@+id/nfcView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="200sp"
+            android:src="@drawable/nfc_on" />
+
+        <ImageView
+            android:id="@+id/wifiView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="140sp"
+            android:src="@drawable/wifi_on" />
+
+        <ImageView
+            android:id="@+id/mapView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20sp"
+            android:src="@drawable/map" />
+
+        <ImageView
+            android:id="@+id/refreshView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="80sp"
+            android:src="@drawable/refresh_on" />
+
+    </RelativeLayout>
 
 </LinearLayout>

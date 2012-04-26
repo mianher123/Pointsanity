@@ -11,20 +11,32 @@
      	android:id="@+id/ItemImage" android:layout_width="80sp" android:layout_height="80sp" >      
 	</ImageView>   
   
-	<TextView  
-     	android:layout_height="wrap_content"      
-     	android:layout_width="fill_parent"      
-     	android:id="@+id/ItemTitle"     
-      	android:layout_toRightOf="@+id/ItemImage"  
-     	android:textSize="20sp"  
-	></TextView>   
-	<TextView      
-     	android:layout_height="wrap_content"      
-     	android:layout_width="fill_parent"   
-      	android:layout_toRightOf="@+id/ItemImage"   
-      	android:layout_below="@+id/ItemTitle"  
-     	android:id="@+id/ItemDist"  
-     	android:textSize="20sp"
-	></TextView>   
+	<TextView
+	    android:id="@+id/ItemTitle"
+	    android:layout_width="180sp"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="10sp"
+	    android:layout_toRightOf="@+id/ItemImage"
+	    android:textSize="20sp" >
+
+</TextView>   
+
+	<TextView
+	    android:id="@+id/ItemDist"
+	    android:layout_width="180sp"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/ItemTitle"
+	    android:layout_toRightOf="@+id/ItemImage"
+	    android:textSize="20sp" >
+
+</TextView>
+
+	<ImageView
+	    android:id="@+id/numberView1"
+	    android:layout_width="50sp" android:layout_height="50sp"
+	    android:layout_alignParentRight="true"
+	    android:layout_alignParentTop="true"
+	    android:src="@drawable/n_0" 
+	    />
   
 </RelativeLayout>  
