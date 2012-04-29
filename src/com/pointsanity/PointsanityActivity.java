@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 
 
+
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
@@ -25,22 +26,29 @@ import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.Facebook.DialogListener;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class PointsanityActivity extends Activity {
@@ -48,14 +56,13 @@ public class PointsanityActivity extends Activity {
 	private ImageView mPickBtn;
 	private ImageView mExchangeBtn;
 	private ImageView mOrderBtn;
-	private Button mConnect;
 	private Button mShop;
 	private Facebook mFacebook;
 	private TextView mFBID;
 	//private TextView mTitle;
 	private TextView mEnter;
-	
-	
+	String ShopId;
+	String result;
 	/*private ListView mListView;
 	private ArrayList<String> list;
 	private ArrayList<String> IDs;
@@ -65,7 +72,7 @@ public class PointsanityActivity extends Activity {
 	int now_position;*/
 	//private EditText mEditText;
 	//private ImageView mImage;
-    private AsyncFacebookRunner mAsyncRunner;
+    public AsyncFacebookRunner mAsyncRunner;
     
     public static final String APP_ID = "321725801219299";
     @Override
@@ -76,17 +83,11 @@ public class PointsanityActivity extends Activity {
         setContentView(R.layout.main);
         Log.d("DebugLog","setContentView");
         
-        
-        
-        
-        
-        
-        
+       
         
         mPickBtn = (ImageView) findViewById(R.id.imageView1);
         mOrderBtn = (ImageView) findViewById(R.id.imageView2);
         mExchangeBtn = (ImageView) findViewById(R.id.imageView3);
-        mConnect = (Button) findViewById(R.id.button3);
         mShop = (Button) findViewById(R.id.button1);
         mFBID = (TextView) findViewById(R.id.fbID);
         //mTitle = (TextView) findViewById(R.id.title);
@@ -163,20 +164,7 @@ public class PointsanityActivity extends Activity {
         	
         });//end OnClickListener
        	
-       	mConnect.setOnClickListener(new OnClickListener(){
-        	public void onClick(View arg0) {
-        		Log.d("Debug","In mConnect");
-        		Runnable ConnectRun = new Runnable(){  
-        	       	  
-               		public void run() {  
-               		    // TODO Auto-generated method stub  
-               			SocketClient("Test string");  
-               		}  
-               		  };  	
-        		new Thread(ConnectRun).start(); 
-        		
-        	};
-       	});
+       	
        	
        	mShop.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
@@ -185,6 +173,7 @@ public class PointsanityActivity extends Activity {
         		Intent intent = new Intent();
 		    	intent.setClass(PointsanityActivity.this,ShopGive.class);
 		    	startActivity(intent);
+        		//genLoginDialog();
         		
         	};
        	});
@@ -193,7 +182,7 @@ public class PointsanityActivity extends Activity {
         		mExchangeBtn.setImageResource(R.drawable.exchange_down);
         		Log.d("Debug","In mExchange");
         		Intent intent = new Intent();
-		    	intent.setClass(PointsanityActivity.this,GridTest.class);
+		    	intent.setClass(PointsanityActivity.this,Exchange.class);
 		    	startActivity(intent);
         		
         	};
@@ -223,6 +212,84 @@ public class PointsanityActivity extends Activity {
         		
        	
     }
+    
+    
+    
+    private String updateToServer(String s){
+		String address = "122.116.119.134";// 連線的ip
+	    int port = 5566;// 連線的port
+	    Socket client = new Socket();
+	       
+        InetSocketAddress isa = new InetSocketAddress(address, port);
+        /*try {
+			server=new ServerSocket(7788);
+		} catch (IOException e1) {
+			System.out.println("serverSocket建立有問題 !");
+            System.out.println("IOException :" + e1.toString());
+		}*/
+        
+        try {
+            client.connect(isa, 15000);
+            BufferedOutputStream out = new BufferedOutputStream(client
+                    .getOutputStream());
+            Log.d("Debug","已得到out");
+            BufferedInputStream in = new BufferedInputStream(client
+                    .getInputStream());
+            Log.d("Debug","已得到in");
+            // 送出字串
+            out.write(s.getBytes());
+            out.flush();
+            /*out.close();
+            out = null;*/
+            Log.d("Debug","已送出字串");
+            
+            byte[] b = new byte[1024];
+            String data = "";
+            int length;
+            //while ((length = in.read(b)) > 0)// <=0的話就是結束了
+            length = in.read(b);
+            data += new String(b, 0, length);
+            
+            Log.d("Debug","我取得的值:" + data);
+            //System.out.println("我取得的值:" + data);
+            in.close();
+            in = null;
+            Log.d("Debug","已讀取完畢");
+            /*synchronized (server) {
+                socket = server.accept();
+            }*/
+           // System.out.println("取得連線 : InetAddress = " + socket.getInetAddress());
+            //Log.d("Debug","取得連線 : InetAddress = " + socket.getInetAddress());
+            // TimeOut時間
+            //socket.setSoTimeout(15000);
+
+            /*in = new java.io.BufferedInputStream(socket.getInputStream());
+            byte[] b = new byte[1024];
+            String data = "";
+            int length;
+            while ((length = in.read(b)) > 0)// <=0的話就是結束了
+            {
+                data += new String(b, 0, length);
+            }
+            Log.d("Debug","我取得的值:" + data);
+            //System.out.println("我取得的值:" + data);
+            in.close();
+            in = null;
+			*/
+            client.close();
+            client = null;
+            Log.d("Debug","關閉socket");
+            return data;
+        } catch (java.io.IOException e) {
+            System.out.println("Socket連線有問題 !");
+            System.out.println("IOException :" + e.toString());
+            return null;
+        }
+    
+		
+		
+	}
+    
     @Override  
     protected void onNewIntent(Intent intent) {  
         // TODO Auto-generated method stub  
@@ -230,11 +297,12 @@ public class PointsanityActivity extends Activity {
         Log.d("Debug","PointsanityActivity onNewIntent");
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
         	Log.d("Debug","PointsanityActivity onNewIntent1");
-        	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+        	/*SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
            	String shop = settings.getString("SHOP", "");
-           	Intent mintent = shop.equals("true") ? intent.setClass(PointsanityActivity.this,ShopGive.class) : intent.setClass(PointsanityActivity.this,Beam.class);
-	    	startActivity(mintent);
-	    	getIntent().setAction("");
+           	Intent mintent = shop.equals("true") ? intent.setClass(PointsanityActivity.this,ShopGive.class) : intent.setClass(PointsanityActivity.this,PointGrid.class);
+	    	startActivity(mintent);*/
+	    	//getIntent().setAction("");
+        	setIntent(intent);
         }  
     }  
     public void onResume() {
@@ -248,7 +316,7 @@ public class PointsanityActivity extends Activity {
         	Log.d("Debug","PointsanityActivity onResume1");
         	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
            	String shop = settings.getString("SHOP", "");
-           	Intent intent = shop.equals("true") ? getIntent().setClass(PointsanityActivity.this,ShopGive.class) : getIntent().setClass(PointsanityActivity.this,Beam.class);
+           	Intent intent = shop.equals("true") ? getIntent().setClass(PointsanityActivity.this,ShopGive.class) : getIntent().setClass(PointsanityActivity.this,PointGrid.class);
 	    	startActivity(intent);
 	    	getIntent().setAction("");
         }

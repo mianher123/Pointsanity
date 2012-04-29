@@ -43,18 +43,12 @@
             android:text="Your facebook ID is:"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="連server" android:layout_marginTop="520sp"/>
-
+        
         <Button
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="520sp"
-            android:layout_toRightOf="@+id/button3"
             android:text="我是店家" />
 
     </RelativeLayout>

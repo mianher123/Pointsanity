@@ -52,7 +52,7 @@ import java.io.FileInputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-import com.pointsanity.GridTest.ViewHolder;
+import com.pointsanity.PointGrid.ViewHolder;
 
 
 

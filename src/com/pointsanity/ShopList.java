@@ -18,6 +18,7 @@ package com.pointsanity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,6 +49,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -88,7 +91,37 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         
         
         
-        mListView = (ListView) findViewById(R.id.listView1);
+        mListView = (ListView) findViewById(R.id.list);
+        /*mListView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                int position, long id) {
+              // When clicked, show a toast with the TextView text
+            	Toast.makeText(getApplicationContext(),
+            			"Click ListItem Number " + position, Toast.LENGTH_LONG)
+            			.show();
+            }
+          });
+          */
+        
+        mListView.setOnItemClickListener(new OnItemClickListener() {  
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            	HashMap<String, Object> map = (HashMap<String, Object>) mListView.getItemAtPosition(arg2);
+            	//current_map=map2;
+            	//current_title=""+map2.get("goods");
+            	Toast.makeText(getApplicationContext(), "選取了 " + map.get("abbr"), Toast.LENGTH_SHORT).show();
+            	Bundle bundle = new Bundle();
+            	bundle.putString("abbr", ""+map.get("abbr"));
+            	Intent intent = new Intent();
+            	//設定下一個Actitity
+            	intent.setClass(ShopList.this, PointGrid.class);
+            	intent.putExtras(bundle);
+            	//開啟Activity
+            	startActivity(intent);
+            	//setTitle("選取了 " + map2.get("shopname"));     	
+            	}  
+            });
+        
+        
        	mNFC = (ImageView) findViewById(R.id.nfcView1);
         mWifi = (ImageView) findViewById(R.id.wifiView1);
         mRefresh = (ImageView) findViewById(R.id.refreshView1);
@@ -114,6 +147,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         	mNFC.setImageResource(R.drawable.nfc_on);
         mNFC.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
+        		mNFC.setImageResource(R.drawable.nfc_off);
         		Toast.makeText(getApplicationContext(), "Please activate NFC and press Back to return to the application!", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
         		
@@ -121,13 +155,14 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
        	});
         mRefresh.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
-        		
-        		
-        		
+        		mRefresh.setImageResource(R.drawable.refresh_off);
+        		updateDistanceInfo();
+        		mRefresh.setImageResource(R.drawable.refresh_on);
         	};
        	});
         mMap.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
+        		mMap.setImageResource(R.drawable.map_off);
         		Log.d("Debug","In mMap");
         		Intent intent = new Intent();
 		    	intent.setClass(ShopList.this,Map.class);
@@ -136,6 +171,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
        	});
         mWifi.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
+        		mWifi.setImageResource(R.drawable.wifi_off);
         		Toast.makeText(getApplicationContext(), "Please activate WIFI and press Back to return to the application!", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
         		
@@ -212,6 +248,8 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
     public void onResume() {
         super.onResume();
         Log.d("Debug","Beam onResume");
+        mMap.setImageResource(R.drawable.map_on);
+        mRefresh.setImageResource(R.drawable.refresh_on);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
             
@@ -268,6 +306,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
     	HashMap<String,Object> item = new HashMap<String,Object>();
     	item.put("icon", R.drawable.hand);
         item.put("shopname", "店名:歇手停");
+        item.put("abbr", "hand");
         shop.setLatitude(shopPose[0][0]);
 		shop.setLongitude(shopPose[0][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -277,6 +316,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.land);
         item.put("shopname", "店名:69嵐");
+        item.put("abbr", "land");
         shop.setLatitude(shopPose[1][0]);
 		shop.setLongitude(shopPose[1][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -286,6 +326,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.apple);
         item.put("shopname", "店名:小蘋果");
+        item.put("abbr", "apple");
         shop.setLatitude(shopPose[2][0]);
 		shop.setLongitude(shopPose[2][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -295,6 +336,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.coffee);
         item.put("shopname", "店名:老咖啡");
+        item.put("abbr", "coffee");
         shop.setLatitude(shopPose[3][0]);
 		shop.setLongitude(shopPose[3][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -304,6 +346,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.family);
         item.put("shopname", "店名:親家便利商店");
+        item.put("abbr", "family");
         shop.setLatitude(shopPose[4][0]);
 		shop.setLongitude(shopPose[4][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -312,7 +355,8 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.fire);
-        item.put("shopname", "店名:阿火茶鋪");
+        item.put("shopname", "店名:阿火茶舖");
+        item.put("abbr", "fire");
         shop.setLatitude(shopPose[5][0]);
 		shop.setLongitude(shopPose[5][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -322,6 +366,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.kaka);
         item.put("shopname", "店名:KaKa真假");
+        item.put("abbr", "kaka");
         shop.setLatitude(shopPose[6][0]);
 		shop.setLongitude(shopPose[6][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -331,6 +376,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.ko);
         item.put("shopname", "店名:KO便利商店");
+        item.put("abbr", "ko");
         shop.setLatitude(shopPose[7][0]);
 		shop.setLongitude(shopPose[7][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -339,7 +385,8 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.one);
-        item.put("shopname", "ONE便利商店");
+        item.put("shopname", "店名:ONE便利商店");
+        item.put("abbr", "one");
         shop.setLatitude(shopPose[8][0]);
 		shop.setLongitude(shopPose[8][1]);
 		Dist = (int)location.distanceTo(shop);
@@ -348,8 +395,8 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         
        	SimpleAdapter sAdapter;
         sAdapter = new SimpleAdapter(this, mList, R.layout.listitem, 
-        		   new String[] {"icon","shopname","distance"}, 
-        		   new int[] {R.id.ItemImage,R.id.ItemTitle, R.id.ItemDist}  );
+        		   new String[] {"icon","shopname","distance","abbr"}, 
+        		   new int[] {R.id.ItemImage,R.id.ItemTitle, R.id.ItemDist, 0}  );
 
         mListView.setAdapter(sAdapter);
         mListView.setTextFilterEnabled(true);

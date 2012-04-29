@@ -44,6 +44,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,12 +59,16 @@ import java.nio.charset.Charset;
 public class ShopGive extends Activity implements CreateNdefMessageCallback, OnNdefPushCompleteCallback {
     NfcAdapter mNfcAdapter;
     TextView mInfoText;
+    ImageView mSignBoard;
     String ShopId;
     String customerID;
     String serverResult;
+    String ShopName;
+    int session = 0;
     private static final int MESSAGE_SENT = 1;
     private static final int GET_ID = 2;
     private static final int GET_INFO = 3;
+    private static final int LOGIN_SENT = 5;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,8 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         setContentView(R.layout.shopgive);
         serverResult="";
         mInfoText = (TextView) findViewById(R.id.textView1);
-        ShopId = "5566";
+        mSignBoard = (ImageView) findViewById(R.id.signboard);
+        //ShopId = "5566";
         //mInfoText = (TextView) findViewById(R.id.textView1);
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -84,6 +90,11 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         mNfcAdapter.setNdefPushMessageCallback(this, this);
         // Register callback to listen for message-sent success
         mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
+        /*Bundle bundle = getIntent().getExtras();
+		ShopName = bundle.getString("shopname");
+		ShopId = bundle.getString("shopid");
+		*/
+		
     }
 
 
@@ -95,7 +106,7 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         //time.setToNow();
         //String text = ("Beam me up!\n\n" + "Beam Time: " + time.format("%H:%M:%S"));
     	
-    	String text = serverResult;
+    	String text = serverResult+" "+ShopName;
         NdefMessage msg = new NdefMessage(
                 new NdefRecord[] { createMimeRecord(
                         "application/com.pointsanity", text.getBytes())
@@ -120,7 +131,49 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         // callback occurs, because it happens from a binder thread
         mHandler.obtainMessage(MESSAGE_SENT).sendToTarget();
     }
+    public void genLoginDialog(){
+   		LayoutInflater inflater = LayoutInflater.from(this);  
+        final View textEntryView = inflater.inflate(R.layout.logindialog, null);  
+        final EditText editInput1=(EditText)textEntryView.findViewById(R.id.editInput1); 
+        final EditText editInput2=(EditText)textEntryView.findViewById(R.id.editInput2);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(ShopGive.this);  
+        builder.setCancelable(false);  
+        //builder.setIcon(R.drawable.icon);  
+        builder.setTitle("店家登入");  
+        builder.setView(textEntryView);  
+        builder.setPositiveButton("確定",  
+                new DialogInterface.OnClickListener() {  
+                    public void onClick(DialogInterface dialog, int whichButton) {  
+                    	Runnable ConnectRun = new Runnable(){  
+              	       	  
+                       		public void run() {  
+                       			
+                       			serverResult = updateToServer("VERIFY "+editInput1.getText()+" "+editInput2.getText());
+                                mHandler.obtainMessage(LOGIN_SENT).sendToTarget();
+                                ShopId = ""+editInput1.getText();
+                                SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);            
+                            	settings.edit().putString("SHOPID", ShopId).commit();
+                       		}  
+                       		  };  	
+                		new Thread(ConnectRun).start(); 
+                    	
+                    	
+                    	
+  
+                    }  
+                });  
+        builder.setNegativeButton("取消",  
+                new DialogInterface.OnClickListener() {  
+                    public void onClick(DialogInterface dialog, int whichButton) {  
+                        //setTitle("");  
+                    }  
+                });  
+        builder.show(); 
 
+   		
+   		
+   		
+   	}
     /** This handler receives a message from onNdefPushComplete */
     private final Handler mHandler = new Handler() {
         @Override
@@ -137,19 +190,55 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         	case GET_INFO:
         		Toast.makeText(getApplicationContext(), "GET INFO: "+serverResult, Toast.LENGTH_LONG).show();
         		break;
+        	case LOGIN_SENT:
+            	if(serverResult.startsWith("VERIFYRESULT")){
+            		String[] part = serverResult.split(" ");
+            		if(part[1].equals("ERROR")){
+            			Toast.makeText(getApplicationContext(), "Login Failed!", Toast.LENGTH_SHORT).show();
+            			genLoginDialog();
+            		}
+            		else{ 
+            			ShopName = part[1].toLowerCase();
+            			
+                    	Toast.makeText(getApplicationContext(), "登入成功", Toast.LENGTH_SHORT).show();
+                    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);            
+                    	settings.edit().putString("SHOP", "true").commit();
+                    	settings.edit().putString("SHOPNAME", ShopName).commit();
+                    	String uri = "drawable/title_"+ShopName;
+                		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                		mSignBoard.setImageDrawable(getResources().getDrawable(imageResource));
+            		}
+            		
+            	}
+                break;
             }
        
         }
     };
-
+    
+    @Override
+    public void onStop() {
+    	super.onStop();
+    	
+    }
     @Override
     public void onResume() {
         super.onResume();
         Log.d("Debug","ShopGive onResume");
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
-        settings.edit().putString("SHOP", "true").commit();
-        Log.d("Debug","ShopGive onResume1");
+        
+        //Log.d("Debug","ShopGive onResume1");
+        SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);         
+        if(settings.getString("SHOP", "").equals("true")){
+        	   
+        	ShopId = settings.getString("SHOPID", "");
+        	ShopName = settings.getString("SHOPNAME", "");
+        	String uri = "drawable/title_"+ShopName;
+    		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+    		mSignBoard.setImageDrawable(getResources().getDrawable(imageResource));
+        }
+        else
+        	genLoginDialog();
         // Check to see that the Activity started due to an Android Beam
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
         	Log.d("Debug","ShopGive onResume2");
@@ -168,8 +257,9 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
     	Log.d("Debug","ShopGive onNewIntent");
     	//mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // onResume gets called after this to handle the intent
-    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
-        settings.edit().putString("SHOP", "true").commit();
+    	//SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+    	//settings.edit().putString("SHOP", "true").commit();
+        //settings.edit().putString("SHOP", "true").commit();
         // Check to see that the Activity started due to an Android Beam
         setIntent(intent);
     }
@@ -185,7 +275,7 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         // record 0 contains the MIME type, record 1 is the AAR, if present
         //mInfoText.setText(new String(msg.getRecords()[0].getPayload()));
         String text = new String(msg.getRecords()[0].getPayload());
-        mInfoText.setText(new String(msg.getRecords()[0].getPayload()));
+        mInfoText.setText("使用者"+new String(msg.getRecords()[0].getPayload()));
         if(text.startsWith("ID")){
         	String[] part = text.split(" ");
         	customerID=part[1];        	

@@ -6,10 +6,11 @@
     android:background="@drawable/plain_bg">
 
     <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="490sp" android:layout_marginLeft="10sp">
-
+        android:layout_height="490sp" 
+        android:divider="#CDCDB4"
+		android:dividerHeight="2px">
     </ListView>
 
     <RelativeLayout
@@ -41,7 +42,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20sp"
-            android:src="@drawable/map" />
+            android:src="@drawable/map_on" />
 
         <ImageView
             android:id="@+id/refreshView1"

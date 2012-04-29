@@ -34,9 +34,10 @@
         </activity>
         <activity android:name="Beam"></activity>
         <activity android:name="ShopGive"></activity>
-        <activity android:name="GridTest"></activity>
+        <activity android:name="PointGrid"></activity>
         <activity android:name="ShopList"></activity>
         <activity android:name="Map"></activity>
+        <activity android:name="Exchange"></activity>
         <uses-library android:name="com.google.android.maps" android:required="true"></uses-library>
     </application>
 

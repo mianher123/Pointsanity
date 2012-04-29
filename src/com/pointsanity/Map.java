@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -56,14 +57,10 @@ public class Map extends MapActivity {
     private MyLocationOverlay locLayer;
     private LandMarkOverlay markLayer;
     private void setupMap() {
-            GeoPoint ntu = new GeoPoint(
-                            (int) (25.018476 * 1000000),
-                            (int) (121.538615 * 1000000)
-            );
+            
             map.setTraffic(false);
             map.setBuiltInZoomControls(true);
-            controller.setZoom(17);
-            controller.animateTo(ntu);
+            
     		
 //            List<Overlay> overlays = map.getOverlays();
     		locLayer = new MyLocationOverlay(this, map);
@@ -71,14 +68,14 @@ public class Map extends MapActivity {
     		locLayer.runOnFirstFix(new Runnable() {
                 public void run() {
                     // Zoom in to current location
-                    map.setTraffic(true);
-                    controller.setZoom(15);
+                    map.setTraffic(false);
+                    controller.setZoom(17);
                     controller.animateTo(locLayer.getMyLocation());
                 }
             });
 //            overlays.add(locLayer);
     		
-    		Drawable pin=getResources().getDrawable(android.R.drawable.btn_star_big_on);
+    		Drawable pin=getResources().getDrawable(R.drawable.mark_red);
             pin.setBounds(0, 0, pin.getMinimumWidth(), pin.getMinimumHeight());
 
             markLayer = new LandMarkOverlay(pin);
@@ -183,17 +180,17 @@ public class Map extends MapActivity {
     }
     
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_I || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+        if (/*keyCode == KeyEvent.KEYCODE_I ||*/ keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             // Zooming In
 //            controller.setZoom(map.getZoomLevel() + 1);
         	controller.setZoom(Math.min(map.getMaxZoomLevel(), map.getZoomLevel() + 1));
         	return true;
-        } else if (keyCode == KeyEvent.KEYCODE_O || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+        } else if (/*keyCode == KeyEvent.KEYCODE_O ||*/ keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             // Zooming Out
 //            controller.setZoom(map.getZoomLevel() - 1);
         	controller.setZoom(Math.max(15, map.getZoomLevel() - 1));
         	return true;
-        } else if (keyCode == KeyEvent.KEYCODE_S) {
+        }/* else if (keyCode == KeyEvent.KEYCODE_S) {
             // Switch to satellite view
             map.setSatellite(true) ;
             map.setTraffic(false);
@@ -203,8 +200,8 @@ public class Map extends MapActivity {
             map.setSatellite(false) ;
             map.setTraffic(true);
             return true;
-        }
-        return false;
+        }*/
+        return super.onKeyDown(keyCode,event);
     }
 
 	@Override
@@ -240,6 +237,12 @@ public class Map extends MapActivity {
     private class LandMarkOverlay extends ItemizedOverlay<OverlayItem> {
 
         private List<OverlayItem> items = new ArrayList<OverlayItem>();
+        @Override
+        public void draw(Canvas canvas, MapView mapView, boolean shadow){
+        
+        	super.draw(canvas, mapView, false);
+        
+        }
 
         public LandMarkOverlay(Drawable defaultMarker) {
                 super(defaultMarker);

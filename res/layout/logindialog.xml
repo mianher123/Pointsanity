@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>  
+  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:layout_width="fill_parent"     
+   android:layout_height="wrap_content"  
+    android:orientation="vertical">
+    <TextView android:id="@+id/textView1" android:textSize="20sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="帳號:"></TextView>  
+    <EditText android:layout_height="wrap_content"  
+        android:layout_width="fill_parent"           
+       android:textAppearance="?android:attr/textAppearanceMedium" 
+       android:id="@+id/editInput1"/>
+    <TextView android:id="@+id/textView2" android:textSize="20sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="密碼:"></TextView>  
+    <EditText android:layout_height="wrap_content"  
+        android:layout_width="fill_parent"           
+      android:textAppearance="?android:attr/textAppearanceMedium" 
+       android:id="@+id/editInput2" android:password="true"/>  
+</LinearLayout> 

@@ -5,13 +5,17 @@
     android:orientation="vertical" 
     android:background="@drawable/seal_bg">
 
-    
+    <ImageView
+        android:id="@+id/signboard"
+        android:layout_width="200sp"
+        android:layout_height="100sp"
+        android:src="@drawable/empty" />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="我是店家"
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>
