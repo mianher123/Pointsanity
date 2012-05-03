@@ -139,21 +139,23 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         final AlertDialog.Builder builder = new AlertDialog.Builder(ShopGive.this);  
         builder.setCancelable(false);  
         //builder.setIcon(R.drawable.icon);  
-        builder.setTitle("©±®aµn¤J");  
+        builder.setTitle("åº—å®¶ç™»å…¥");  
         builder.setView(textEntryView);  
-        builder.setPositiveButton("½T©w",  
+        builder.setPositiveButton("ç¢ºå®š",  
                 new DialogInterface.OnClickListener() {  
                     public void onClick(DialogInterface dialog, int whichButton) {  
                     	Runnable ConnectRun = new Runnable(){  
               	       	  
                        		public void run() {  
-                       			
+                       			if(editInput1.getText().length()>0 && editInput2.getText().length()>0){
+                       				
                        			serverResult = updateToServer("VERIFY "+editInput1.getText()+" "+editInput2.getText());
                                 mHandler.obtainMessage(LOGIN_SENT).sendToTarget();
                                 ShopId = ""+editInput1.getText();
                                 SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);            
                             	settings.edit().putString("SHOPID", ShopId).commit();
-                       		}  
+                       			}  
+                       			}
                        		  };  	
                 		new Thread(ConnectRun).start(); 
                     	
@@ -162,7 +164,7 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
   
                     }  
                 });  
-        builder.setNegativeButton("¨ú®ø",  
+        builder.setNegativeButton("å–æ¶ˆ",  
                 new DialogInterface.OnClickListener() {  
                     public void onClick(DialogInterface dialog, int whichButton) {  
                         //setTitle("");  
@@ -200,7 +202,7 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
             		else{ 
             			ShopName = part[1].toLowerCase();
             			
-                    	Toast.makeText(getApplicationContext(), "µn¤J¦¨¥\", Toast.LENGTH_SHORT).show();
+                    	Toast.makeText(getApplicationContext(), "ç™»å…¥æˆåŠŸ", Toast.LENGTH_SHORT).show();
                     	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);            
                     	settings.edit().putString("SHOP", "true").commit();
                     	settings.edit().putString("SHOPNAME", ShopName).commit();
@@ -244,6 +246,7 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         	Log.d("Debug","ShopGive onResume2");
             processIntent(getIntent());
             Log.d("Debug","ShopGive onResume3");
+            getIntent().setAction("");
         }
         else{
         	Log.d("Debug","ShopGive onResume4");
@@ -275,12 +278,12 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         // record 0 contains the MIME type, record 1 is the AAR, if present
         //mInfoText.setText(new String(msg.getRecords()[0].getPayload()));
         String text = new String(msg.getRecords()[0].getPayload());
-        mInfoText.setText("¨Ï¥ÎªÌ"+new String(msg.getRecords()[0].getPayload()));
+        mInfoText.setText("ä½¿ç”¨è€…"+new String(msg.getRecords()[0].getPayload()));
         if(text.startsWith("ID")){
         	String[] part = text.split(" ");
         	customerID=part[1];        	
         	mHandler.obtainMessage(GET_ID).sendToTarget();
-        	AlertDialog alertDialog = getAlertDialog("","½Ð¿ï¾Ü¶°ÂI©Î¬O§I´«");
+        	AlertDialog alertDialog = getAlertDialog("","è«‹é¸æ“‡é›†é»žæˆ–æ˜¯å…Œæ›");
         	alertDialog.show();
             //time.format("%H:%M:%S")
             /*Runnable ConnectRun = new Runnable(){  
@@ -325,11 +328,11 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
         builder.setCancelable(false);  
         //builder.setIcon(R.drawable.icon);  
         if(pick_or_convert == 0)
-        	builder.setTitle("½Ð¿ï¾Ü±ýµ¹¤©ªºÂI¼Æ¼Æ¶q");  
+        	builder.setTitle("è«‹é¸æ“‡æ¬²çµ¦äºˆçš„é»žæ•¸æ•¸é‡");  
         else
-        	builder.setTitle("½Ð¿ï¾Ü§I´«ªº¦¸¼Æ");  
+        	builder.setTitle("è«‹é¸æ“‡å…Œæ›çš„æ¬¡æ•¸");  
         builder.setView(textEntryView);  
-        builder.setPositiveButton("¤W¶Ç",  
+        builder.setPositiveButton("ä¸Šå‚³",  
                 new DialogInterface.OnClickListener() {  
                     public void onClick(DialogInterface dialog, int whichButton) {  
                     	Runnable ConnectRun = new Runnable(){  
@@ -347,7 +350,7 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
                     	//setTitle(edtInput.getText());  
                     }  
                 });  
-        builder.setNegativeButton("¨ú®ø",  
+        builder.setNegativeButton("å–æ¶ˆ",  
                 new DialogInterface.OnClickListener() {  
                     public void onClick(DialogInterface dialog, int whichButton) {  
                         //setTitle("");  
@@ -361,42 +364,42 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
    	}
     
     private AlertDialog getAlertDialog(String title,String message){
-        //²£¥Í¤@­ÓBuilderª«¥ó
+        //ï¿½ï¿½ï¿½Í¤@ï¿½ï¿½Builderï¿½ï¿½ï¿½ï¿½
         Builder builder = new AlertDialog.Builder(ShopGive.this);
-        //³]©wDialogªº¼ÐÃD
+        //ï¿½]ï¿½wDialogï¿½ï¿½ï¿½ï¿½ï¿½D
         builder.setTitle(title);
-        //³]©wDialogªº¤º®e
+        //ï¿½]ï¿½wDialogï¿½ï¿½ï¿½ï¿½ï¿½e
         builder.setMessage(message);
-        //³]©wPositive«ö¶s¸ê®Æ
-        builder.setPositiveButton("¶°ÂI", new DialogInterface.OnClickListener() {
+        //ï¿½]ï¿½wPositiveï¿½ï¿½ï¿½sï¿½ï¿½ï¿½
+        builder.setPositiveButton("é›†é»ž", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                //«ö¤U«ö¶s®ÉÅã¥Ü§ÖÅã
-                //Toast.makeText(ShopGive.this, "±z«ö¤UOK«ö¶s", Toast.LENGTH_SHORT).show();
+                //ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½Ü§ï¿½ï¿½ï¿½
+                //Toast.makeText(ShopGive.this, "ï¿½zï¿½ï¿½ï¿½UOKï¿½ï¿½ï¿½s", Toast.LENGTH_SHORT).show();
             	genDialog(0);
             }
         });
-        //³]©wNegative«ö¶s¸ê®Æ
-        builder.setNegativeButton("§I´«", new DialogInterface.OnClickListener() {
+        //ï¿½]ï¿½wNegativeï¿½ï¿½ï¿½sï¿½ï¿½ï¿½
+        builder.setNegativeButton("å…Œæ›", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             	genDialog(1);
-                //«ö¤U«ö¶s®ÉÅã¥Ü§ÖÅã
-                //Toast.makeText(ShopGive.this, "±z«ö¤UCancel«ö¶s", Toast.LENGTH_SHORT).show();
+                //ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½Ü§ï¿½ï¿½ï¿½
+                //Toast.makeText(ShopGive.this, "ï¿½zï¿½ï¿½ï¿½UCancelï¿½ï¿½ï¿½s", Toast.LENGTH_SHORT).show();
             }
         });
-        //§Q¥ÎBuilderª«¥ó«Ø¥ßAlertDialog
+        //ï¿½Qï¿½ï¿½Builderï¿½ï¿½ï¿½ï¿½Ø¥ï¿½AlertDialog
         return builder.create();
     }
     
     private String updateToServer(String s){
-		String address = "122.116.119.134";// ³s½uªºip
-	    int port = 5566;// ³s½uªºport
+		String address = "122.116.119.134";// ï¿½sï¿½uï¿½ï¿½ip
+	    int port = 5566;// ï¿½sï¿½uï¿½ï¿½port
 	    Socket client = new Socket();
 	       
         InetSocketAddress isa = new InetSocketAddress(address, port);
         /*try {
 			server=new ServerSocket(7788);
 		} catch (IOException e1) {
-			System.out.println("serverSocket«Ø¥ß¦³°ÝÃD !");
+			System.out.println("serverSocketï¿½Ø¥ß¦ï¿½ï¿½ï¿½ï¿½D !");
             System.out.println("IOException :" + e1.toString());
 		}*/
         
@@ -404,56 +407,56 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
             client.connect(isa, 15000);
             BufferedOutputStream out = new BufferedOutputStream(client
                     .getOutputStream());
-            Log.d("Debug","¤w±o¨ìout");
+            //Log.d("Debug","å·²å¾—åˆ°out");
             BufferedInputStream in = new BufferedInputStream(client
                     .getInputStream());
-            Log.d("Debug","¤w±o¨ìin");
-            // °e¥X¦r¦ê
+            //Log.d("Debug","å·²å¾—åˆ°in");
+            // ï¿½eï¿½Xï¿½rï¿½ï¿½
             out.write(s.getBytes());
             out.flush();
             /*out.close();
             out = null;*/
-            Log.d("Debug","¤w°e¥X¦r¦ê");
+            Log.d("Debug","å·²é€å‡ºå­—ä¸²");
             
             byte[] b = new byte[1024];
             String data = "";
             int length;
-            //while ((length = in.read(b)) > 0)// <=0ªº¸Ü´N¬Oµ²§ô¤F
+            //while ((length = in.read(b)) > 0)// <=0ï¿½ï¿½ï¿½Ü´Nï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½F
             length = in.read(b);
             data += new String(b, 0, length);
             
-            Log.d("Debug","§Ú¨ú±oªº­È:" + data);
-            //System.out.println("§Ú¨ú±oªº­È:" + data);
+            Log.d("Debug","æˆ‘å–å¾—çš„å€¼:" + data);
+            //System.out.println("ï¿½Ú¨ï¿½oï¿½ï¿½ï¿½ï¿½:" + data);
             in.close();
             in = null;
-            Log.d("Debug","¤wÅª¨ú§¹²¦");
+            Log.d("Debug","å·²è®€å–å®Œç•¢");
             /*synchronized (server) {
                 socket = server.accept();
             }*/
-           // System.out.println("¨ú±o³s½u : InetAddress = " + socket.getInetAddress());
-            //Log.d("Debug","¨ú±o³s½u : InetAddress = " + socket.getInetAddress());
-            // TimeOut®É¶¡
+           // System.out.println("ï¿½ï¿½oï¿½sï¿½u : InetAddress = " + socket.getInetAddress());
+            //Log.d("Debug","ï¿½ï¿½oï¿½sï¿½u : InetAddress = " + socket.getInetAddress());
+            // TimeOutï¿½É¶ï¿½
             //socket.setSoTimeout(15000);
 
             /*in = new java.io.BufferedInputStream(socket.getInputStream());
             byte[] b = new byte[1024];
             String data = "";
             int length;
-            while ((length = in.read(b)) > 0)// <=0ªº¸Ü´N¬Oµ²§ô¤F
+            while ((length = in.read(b)) > 0)// <=0ï¿½ï¿½ï¿½Ü´Nï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½F
             {
                 data += new String(b, 0, length);
             }
-            Log.d("Debug","§Ú¨ú±oªº­È:" + data);
-            //System.out.println("§Ú¨ú±oªº­È:" + data);
+            Log.d("Debug","ï¿½Ú¨ï¿½oï¿½ï¿½ï¿½ï¿½:" + data);
+            //System.out.println("ï¿½Ú¨ï¿½oï¿½ï¿½ï¿½ï¿½:" + data);
             in.close();
             in = null;
 			*/
             client.close();
             client = null;
-            Log.d("Debug","Ãö³¬socket");
+            Log.d("Debug","é—œé–‰socket");
             return data;
         } catch (java.io.IOException e) {
-            System.out.println("Socket³s½u¦³°ÝÃD !");
+            System.out.println("Socketé€£ç·šæœ‰å•é¡Œ !");
             System.out.println("IOException :" + e.toString());
             return null;
         }

@@ -57,11 +57,17 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 
@@ -77,6 +83,7 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
     ImageView mMap;
     private ListView mListView;
     private static final int MESSAGE_SENT = 1;
+    private static final int REFRESH_SUCCESS = 2;
     String FBID;
     ArrayList<HashMap<String,Object>> mList = new ArrayList<HashMap<String,Object>>();   
     private LocationManager mgr;
@@ -156,8 +163,15 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
         mRefresh.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
         		mRefresh.setImageResource(R.drawable.refresh_off);
-        		updateDistanceInfo();
-        		mRefresh.setImageResource(R.drawable.refresh_on);
+        		Runnable ConnectRun = new Runnable(){  
+      	       	  
+               		public void run() {  
+               			updatePoints();
+                        mHandler.obtainMessage(REFRESH_SUCCESS).sendToTarget();
+               		}  
+               		  };  	
+        		new Thread(ConnectRun).start(); 
+        		
         	};
        	});
         mMap.setOnClickListener(new OnClickListener(){
@@ -240,7 +254,19 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
             case MESSAGE_SENT:
                 Toast.makeText(getApplicationContext(), "Message sent!", Toast.LENGTH_LONG).show();
                 break;
-            }
+            
+        	case REFRESH_SUCCESS:
+        		updateDistanceInfo();
+        		Toast.makeText(getApplicationContext(), "已更新距離與點數", Toast.LENGTH_SHORT).show();
+                
+        		mRefresh.setImageResource(R.drawable.refresh_on);
+        		break;
+        	}
+            
+            
+            
+            
+            
         }
     };
 
@@ -299,8 +325,102 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		updateDistanceInfo();
     }
     
+    void updatePoints(){
+    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+    	String serverResult = updateToServer("REFRESH "+settings.getString("ID", ""));
+    	if(serverResult.startsWith("REFRESHRESULT")){
+    		String[] part = serverResult.split(" ");
+    		
+    		for(int i=1;i<part.length;i+=2){
+    			settings.edit().putString(part[i].toLowerCase(), part[i+1]).commit();
+    		
+    		}
+    	}
+    	
+    }
+    private String updateToServer(String s){
+		String address = "122.116.119.134";// �s�u��ip
+	    int port = 5566;// �s�u��port
+	    Socket client = new Socket();
+	       
+        InetSocketAddress isa = new InetSocketAddress(address, port);
+        /*try {
+			server=new ServerSocket(7788);
+		} catch (IOException e1) {
+			System.out.println("serverSocket�إߦ����D !");
+            System.out.println("IOException :" + e1.toString());
+		}*/
+        
+        try {
+            client.connect(isa, 15000);
+            BufferedOutputStream out = new BufferedOutputStream(client
+                    .getOutputStream());
+            //Log.d("Debug","已得到out");
+            BufferedInputStream in = new BufferedInputStream(client
+                    .getInputStream());
+            //Log.d("Debug","已得到in");
+            // �e�X�r��
+            out.write(s.getBytes());
+            out.flush();
+            /*out.close();
+            out = null;*/
+            Log.d("Debug","已送出字串");
+            
+            byte[] b = new byte[1024];
+            String data = "";
+            int length;
+            //while ((length = in.read(b)) > 0)// <=0���ܴN�O�����F
+            length = in.read(b);
+            data += new String(b, 0, length);
+            
+            Log.d("Debug","我取得的值:" + data);
+            //System.out.println("�ڨ�o����:" + data);
+            in.close();
+            in = null;
+            Log.d("Debug","已讀取完畢");
+            /*synchronized (server) {
+                socket = server.accept();
+            }*/
+           // System.out.println("��o�s�u : InetAddress = " + socket.getInetAddress());
+            //Log.d("Debug","��o�s�u : InetAddress = " + socket.getInetAddress());
+            // TimeOut�ɶ�
+            //socket.setSoTimeout(15000);
+
+            /*in = new java.io.BufferedInputStream(socket.getInputStream());
+            byte[] b = new byte[1024];
+            String data = "";
+            int length;
+            while ((length = in.read(b)) > 0)// <=0���ܴN�O�����F
+            {
+                data += new String(b, 0, length);
+            }
+            Log.d("Debug","�ڨ�o����:" + data);
+            //System.out.println("�ڨ�o����:" + data);
+            in.close();
+            in = null;
+			*/
+            client.close();
+            client = null;
+            Log.d("Debug","關閉socket");
+            return data;
+        } catch (java.io.IOException e) {
+            System.out.println("Socket連線有問題 !");
+            System.out.println("IOException :" + e.toString());
+            return null;
+        }
+    
+		
+		
+	}
+    
     private void updateDistanceInfo(){
+    	
+    	
     	Location shop = new Location("reverseGeocoded");
+    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+    	String uri;
+    	int imageResource;
+    	int num_points=0;
         int Dist;
         mList.clear();
     	HashMap<String,Object> item = new HashMap<String,Object>();
@@ -311,7 +431,32 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[0][1]);
 		Dist = (int)location.distanceTo(shop);
 		item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist) +"公里"));
-        mList.add(item);
+		
+		num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("hand", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("hand", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
+		mList.add(item);
         
         item = new HashMap<String,Object>();
         item.put("icon", R.drawable.land);
@@ -321,6 +466,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[1][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist)+"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("land", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("land", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -331,6 +500,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[2][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist) +"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("apple", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("apple", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -341,6 +534,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[3][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist) +"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("coffee", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("coffee", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -351,6 +568,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[4][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist) +"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("family", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("family", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -361,6 +602,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[5][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist) +"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("fire", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("fire", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -371,6 +636,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[6][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist)+"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("kaka", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("kaka", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -381,6 +670,30 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[7][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist)+"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("ko", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("ko", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
         
         item = new HashMap<String,Object>();
@@ -391,12 +704,48 @@ public class ShopList extends Activity implements CreateNdefMessageCallback,
 		shop.setLongitude(shopPose[8][1]);
 		Dist = (int)location.distanceTo(shop);
         item.put("distance", (location == null ?"距離:未知":"距離:約"+getDistString(Dist) +"公里"));
+        num_points=0;
+		try{
+			num_points = Integer.parseInt(settings.getString("one", ""));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			settings.edit().putString("one", ""+0).commit();
+		}
+		if(num_points<10){
+			uri = "drawable/empty";
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		else{
+			
+			uri = "drawable/n_"+num_points/10;
+			imageResource = getResources().getIdentifier(uri, null, getPackageName());
+			item.put("numview2", imageResource);
+			
+		}
+		uri = "drawable/n_"+num_points%10;
+		imageResource = getResources().getIdentifier(uri, null, getPackageName());
+		item.put("numview1", imageResource);
         mList.add(item);
+        
+        Collections.sort(mList, new Comparator(){
+        	 
+            public int compare(Object o1, Object o2) {
+            	HashMap<String,Object> p1 = (HashMap<String,Object>) o1;
+            	HashMap<String,Object> p2 = (HashMap<String,Object>) o2;
+            	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+            	
+               return Integer.parseInt(settings.getString((String) p2.get("abbr"), "")) > Integer.parseInt(settings.getString((String) p1.get("abbr"), ""))?1:-1;
+            }
+ 
+        });
         
        	SimpleAdapter sAdapter;
         sAdapter = new SimpleAdapter(this, mList, R.layout.listitem, 
-        		   new String[] {"icon","shopname","distance","abbr"}, 
-        		   new int[] {R.id.ItemImage,R.id.ItemTitle, R.id.ItemDist, 0}  );
+        		   new String[] {"icon","shopname","distance","numview2","numview1","abbr"}, 
+        		   new int[] {R.id.ItemImage,R.id.ItemTitle, R.id.ItemDist,R.id.numberView2,R.id.numberView1, 0}  );
 
         mListView.setAdapter(sAdapter);
         mListView.setTextFilterEnabled(true);

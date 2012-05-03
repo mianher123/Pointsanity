@@ -19,6 +19,7 @@
         
         <activity
             android:name=".PointsanityActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" 
             android:launchMode="singleTask">
             <intent-filter>
@@ -32,12 +33,18 @@
                 <data android:mimeType="application/com.pointsanity" />
             </intent-filter>
         </activity>
-        <activity android:name="Beam"></activity>
-        <activity android:name="ShopGive"></activity>
-        <activity android:name="PointGrid"></activity>
-        <activity android:name="ShopList"></activity>
-        <activity android:name="Map"></activity>
-        <activity android:name="Exchange"></activity>
+        <activity android:name="Beam"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="ShopGive"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="PointGrid"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="ShopList"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="Map"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="Exchange"
+            android:screenOrientation="portrait"></activity>
         <uses-library android:name="com.google.android.maps" android:required="true"></uses-library>
     </application>
 

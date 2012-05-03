@@ -1,44 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>  
-<RelativeLayout      
-         android:id="@+id/RelativeLayout01"      
-         android:layout_width="fill_parent"      
-         xmlns:android="http://schemas.android.com/apk/res/android"      
-         android:layout_height="80sp"
-         android:background="@drawable/cupboard"
-         
-         >   
-	<ImageView      
-     	android:id="@+id/ItemImage" android:layout_width="135sp" android:layout_height="80sp" >      
-	</ImageView>   
-  
-	<TextView
-	    android:id="@+id/ItemTitle"
-	    android:layout_width="180sp"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="10sp"
-	    android:layout_toRightOf="@+id/ItemImage"
-	    android:textColor="@color/blue"  
-	    android:textSize="20sp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout01"
+    android:layout_width="fill_parent"
+    android:layout_height="80sp"
+    android:background="@drawable/cupboard_new" >
 
-</TextView>   
+    <ImageView
+        android:id="@+id/ItemImage"
+        android:layout_width="126sp"
+        android:layout_height="80sp" >
+    </ImageView>
 
-	<TextView
-	    android:id="@+id/ItemDist"
-	    android:layout_width="180sp"
-	    android:layout_height="wrap_content"
-	    android:layout_below="@+id/ItemTitle"
-	    android:layout_toRightOf="@+id/ItemImage"
-	    android:textColor="@color/blue"  
-	    android:textSize="20sp" >
+    <TextView
+        android:id="@+id/ItemTitle"
+        android:layout_width="180sp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="122sp"
+        android:layout_marginTop="10sp"
+        android:textColor="@color/blue"
+        android:textSize="20sp" >
+    </TextView>
 
-</TextView>
+    <TextView
+        android:id="@+id/ItemDist"
+        android:layout_width="180sp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ItemTitle"
+        android:layout_marginLeft="122sp"
+        android:textColor="@color/blue"
+        android:textSize="20sp" >
+    </TextView>
 
-	<ImageView
-	    android:id="@+id/numberView1"
-	    android:layout_width="50sp" android:layout_height="50sp"
-	    android:layout_alignParentRight="true"
-	    android:layout_alignParentTop="true"
-	    android:src="@drawable/n_0" 
-	    />
-  
+    <ImageView
+        android:id="@+id/numberView1"
+        android:layout_width="23sp"
+        android:layout_height="40sp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="183sp"
+        android:src="@drawable/n_0" android:layout_toRightOf="@id/ItemImage"/>
+
+    <ImageView
+        android:id="@+id/numberView2"
+        android:layout_width="23sp"
+        android:layout_height="40sp"
+        android:layout_toRightOf="@id/ItemImage"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="160sp"
+        android:src="@drawable/n_0" />
+
 </RelativeLayout>  

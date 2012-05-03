@@ -56,7 +56,7 @@ public class PointsanityActivity extends Activity {
 	private ImageView mPickBtn;
 	private ImageView mExchangeBtn;
 	private ImageView mOrderBtn;
-	private Button mShop;
+	private ImageView mShop;
 	private Facebook mFacebook;
 	private TextView mFBID;
 	//private TextView mTitle;
@@ -88,7 +88,7 @@ public class PointsanityActivity extends Activity {
         mPickBtn = (ImageView) findViewById(R.id.imageView1);
         mOrderBtn = (ImageView) findViewById(R.id.imageView2);
         mExchangeBtn = (ImageView) findViewById(R.id.imageView3);
-        mShop = (Button) findViewById(R.id.button1);
+        mShop = (ImageView) findViewById(R.id.button1);
         mFBID = (TextView) findViewById(R.id.fbID);
         //mTitle = (TextView) findViewById(R.id.title);
         mEnter = (TextView) findViewById(R.id.enter);
@@ -168,7 +168,7 @@ public class PointsanityActivity extends Activity {
        	
        	mShop.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
-        		
+        		mShop.setImageResource(R.drawable.imshop_down);
         		Log.d("Debug","In mShop");
         		Intent intent = new Intent();
 		    	intent.setClass(PointsanityActivity.this,ShopGive.class);
@@ -213,7 +213,43 @@ public class PointsanityActivity extends Activity {
        	
     }
     
-    
+    private void sendToServer(String s){
+    	
+    		String address = "122.116.119.134";// 連線的ip
+    	    int port = 5566;// 連線的port
+    	    Socket client = new Socket();
+    	       
+            InetSocketAddress isa = new InetSocketAddress(address, port);
+            /*try {
+    			server=new ServerSocket(7788);
+    		} catch (IOException e1) {
+    			System.out.println("serverSocket建立有問題 !");
+                System.out.println("IOException :" + e1.toString());
+    		}*/
+            
+            try {
+                client.connect(isa, 15000);
+                BufferedOutputStream out = new BufferedOutputStream(client
+                        .getOutputStream());
+                Log.d("Debug","已得到out");
+                
+                // 送出字串
+                out.write(s.getBytes());
+                out.flush();
+                /*out.close();
+                out = null;*/
+                Log.d("Debug","已送出字串");
+                client.close();
+                client = null;
+                Log.d("Debug","關閉socket");
+               
+            } catch (java.io.IOException e) {
+                System.out.println("Socket連線有問題 !");
+                System.out.println("IOException :" + e.toString());
+                
+            }
+        
+    }
     
     private String updateToServer(String s){
 		String address = "122.116.119.134";// 連線的ip
@@ -310,6 +346,7 @@ public class PointsanityActivity extends Activity {
         // Check to see that the Activity started due to an Android Beam
         mPickBtn.setImageResource(R.drawable.pick);
         mExchangeBtn.setImageResource(R.drawable.exchange);
+        mShop.setImageResource(R.drawable.imshop);
         mOrderBtn.setImageResource(R.drawable.order);
         Log.d("Debug","PointsanityActivity onResume");
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
@@ -331,6 +368,7 @@ public class PointsanityActivity extends Activity {
 			try{
 				jObject=new JSONObject(response);
 				id =jObject.getString("id");
+				sendToServer("REGISTER "+id);
 				name =jObject.getString("name");
 				
 				PointsanityActivity.this.runOnUiThread(new Runnable(){

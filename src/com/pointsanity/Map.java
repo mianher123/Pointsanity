@@ -95,15 +95,15 @@ public class Map extends MapActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
             // TODO Auto-generated method stub
-    	menu.add(0, MENU_HAND, 0, "·²¤â°±");
-        menu.add(0, MENU_LAND, 0, "69´P");
-        menu.add(0, MENU_APPLE, 0, "¤pÄ«ªG");
-        menu.add(0, MENU_COFFEE, 0, "¦Ñ©@°Ø");
-        menu.add(0, MENU_FAMILY, 0, "¿Ë®a«K§Q°Ó©±");
-        menu.add(0, MENU_FIRE, 0, "ªü¤õ¯ù¾Q");
-        menu.add(0, MENU_KAKA, 0, "KaKa¯u°²");
-        menu.add(0, MENU_KO, 0, "KO«K§Q°Ó©±");
-        menu.add(0, MENU_ONE, 0, "ONE«K§Q°Ó©±");
+    	menu.add(0, MENU_HAND, 0, "æ­‡æ‰‹åœ");
+        menu.add(0, MENU_LAND, 0, "69åµ");
+        menu.add(0, MENU_APPLE, 0, "å°è˜‹æœ");
+        menu.add(0, MENU_COFFEE, 0, "è€å’–å•¡");
+        menu.add(0, MENU_FAMILY, 0, "è¦ªå®¶ä¾¿åˆ©å•†åº—");
+        menu.add(0, MENU_FIRE, 0, "é˜¿ç«èŒ¶é‹ª");
+        menu.add(0, MENU_KAKA, 0, "KaKaçœŸå‡");
+        menu.add(0, MENU_KO, 0, "KOä¾¿åˆ©å•†åº—");
+        menu.add(0, MENU_ONE, 0, "ONEä¾¿åˆ©å•†åº—");
             return super.onCreateOptionsMenu(menu);
     }
 
@@ -250,56 +250,56 @@ public class Map extends MapActivity {
                 items.add(
                     new OverlayItem(
                                 hand,
-                                "¥x¥_",
-                                "·²¤â°±")
+                                "å°åŒ—",
+                                "æ­‡æ‰‹åœ")
                         );
                 items.add(
                     new OverlayItem(
                                 land,
-                                "¥x¤¤",
-                                "69´P")
+                                "å°ä¸­",
+                                "69åµ")
                         );
                 items.add(
                     new OverlayItem(
                                 apple,
-                                "°ª¶¯",
-                                "¤pÄ«ªG")
+                                "é«˜é›„",
+                                "å°è˜‹æœ")
                         );
                 items.add(
                         new OverlayItem(
                                     coffee,
-                                    "°ª¶¯",
-                                    "¦Ñ©@°Ø")
+                                    "é«˜é›„",
+                                    "è€å’–å•¡")
                             );
                 items.add(
                         new OverlayItem(
                                     family,
-                                    "°ª¶¯",
-                                    "¿Ë®a«K§Q°Ó©±")
+                                    "é«˜é›„",
+                                    "è¦ªå®¶ä¾¿åˆ©å•†åº—")
                             );
                 items.add(
                         new OverlayItem(
                                     fire,
-                                    "°ª¶¯",
-                                    "ªü¤õ¯ùçE")
+                                    "é«˜é›„",
+                                    "é˜¿ç«èŒ¶èˆ–")
                             );
                 items.add(
                         new OverlayItem(
                                     kaka,
-                                    "°ª¶¯",
-                                    "KaKa¯u°²")
+                                    "é«˜é›„",
+                                    "KaKaçœŸå‡")
                             );
                 items.add(
                         new OverlayItem(
                                     ko,
-                                    "°ª¶¯",
-                                    "KO«K§Q°Ó©±")
+                                    "é«˜é›„",
+                                    "KOä¾¿åˆ©å•†åº—")
                             );
                 items.add(
                         new OverlayItem(
                                     one,
-                                    "°ª¶¯",
-                                    "ONE«K§Q°Ó©±")
+                                    "é«˜é›„",
+                                    "ONEä¾¿åˆ©å•†åº—")
                             );
                 populate();
         }
