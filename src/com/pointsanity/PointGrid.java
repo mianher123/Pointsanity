@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -35,6 +36,7 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.format.Time;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,7 +52,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
@@ -65,9 +71,13 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
     GridAdapter gridAdapter;
     ImageView mSignBoard;
     ImageView mNFC;
+    ImageView mWifi;
+    ImageView mRefresh;
+    ImageView mMap;
     NfcAdapter mNfcAdapter;
     String title;
     private static final int MESSAGE_SENT = 1;
+    private static final int REFRESH_SUCCESS = 2;
     String FBID;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,7 +87,7 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
         pointsGrid = (GridView) findViewById(R.id.PointsGrid);
         cardInfo = (TextView) findViewById(R.id.CardInfo);
         mSignBoard = (ImageView) findViewById(R.id.shopView);
-        mNFC = (ImageView) findViewById(R.id.nfcView);
+        //mNFC = (ImageView) findViewById(R.id.nfcView);
         gridAdapter = new GridAdapter();
 		pointsGrid.setAdapter(gridAdapter);
 		SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
@@ -85,9 +95,22 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
 		Bundle bundle = getIntent().getExtras();
 		title = bundle.getString("abbr");
 		
-		//mSignBoard.setImageResource(R.drawable.wifi_on);
-		//InfoUpdate();
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		mNFC = (ImageView) findViewById(R.id.nfcView1);
+        mWifi = (ImageView) findViewById(R.id.wifiView1);
+        mRefresh = (ImageView) findViewById(R.id.refreshView1);
+        mMap = (ImageView) findViewById(R.id.mapView1);
+        if(checkWifiStatus()){
+        	mWifi.setImageResource(R.drawable.wifi_on);
+        	
+        }
+        else
+        	mWifi.setImageResource(R.drawable.wifi_off);
+       	
+        //updateDistanceInfo();
+        
+       	
+       	
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
             
             mNFC.setImageResource(R.drawable.nfc_off);
@@ -97,17 +120,147 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
         	mNFC.setImageResource(R.drawable.nfc_on);
         mNFC.setOnClickListener(new OnClickListener(){
         	public void onClick(View arg0) {
+        		mNFC.setImageResource(R.drawable.nfc_off);
         		Toast.makeText(getApplicationContext(), "Please activate NFC and press Back to return to the application!", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
         		
         	};
        	});
-        
+        mRefresh.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		mRefresh.setImageResource(R.drawable.refresh_off);
+        		Runnable ConnectRun = new Runnable(){  
+      	       	  
+               		public void run() {  
+               			updatePoints();
+                        mHandler.obtainMessage(REFRESH_SUCCESS).sendToTarget();
+               		}  
+               		  };  	
+        		new Thread(ConnectRun).start(); 
+        		
+        	};
+       	});
+        mMap.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		mMap.setImageResource(R.drawable.map_off);
+        		Log.d("Debug","In mMap");
+        		Intent intent = new Intent();
+		    	intent.setClass(PointGrid.this,Map.class);
+		    	startActivity(intent);
+        	};
+       	});
+        mWifi.setOnClickListener(new OnClickListener(){
+        	public void onClick(View arg0) {
+        		mWifi.setImageResource(R.drawable.wifi_off);
+        		Toast.makeText(getApplicationContext(), "Please activate WIFI and press Back to return to the application!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+        		
+        	};
+       	});
         // Register callback to set NDEF message
         mNfcAdapter.setNdefPushMessageCallback(this, this);
         // Register callback to listen for message-sent success
         mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
 		
+    }
+    private String updateToServer(String s){
+		String address = "122.116.119.134";// �s�u��ip
+	    int port = 5566;// �s�u��port
+	    Socket client = new Socket();
+	       
+        InetSocketAddress isa = new InetSocketAddress(address, port);
+        /*try {
+			server=new ServerSocket(7788);
+		} catch (IOException e1) {
+			System.out.println("serverSocket�إߦ����D !");
+            System.out.println("IOException :" + e1.toString());
+		}*/
+        
+        try {
+            client.connect(isa, 15000);
+            BufferedOutputStream out = new BufferedOutputStream(client
+                    .getOutputStream());
+            //Log.d("Debug","已得到out");
+            BufferedInputStream in = new BufferedInputStream(client
+                    .getInputStream());
+            //Log.d("Debug","已得到in");
+            // �e�X�r��
+            out.write(s.getBytes());
+            out.flush();
+            /*out.close();
+            out = null;*/
+            Log.d("Debug","已送出字串");
+            
+            byte[] b = new byte[1024];
+            String data = "";
+            int length;
+            //while ((length = in.read(b)) > 0)// <=0���ܴN�O�����F
+            length = in.read(b);
+            data += new String(b, 0, length);
+            
+            Log.d("Debug","我取得的值:" + data);
+            //System.out.println("�ڨ�o����:" + data);
+            in.close();
+            in = null;
+            Log.d("Debug","已讀取完畢");
+            /*synchronized (server) {
+                socket = server.accept();
+            }*/
+           // System.out.println("��o�s�u : InetAddress = " + socket.getInetAddress());
+            //Log.d("Debug","��o�s�u : InetAddress = " + socket.getInetAddress());
+            // TimeOut�ɶ�
+            //socket.setSoTimeout(15000);
+
+            /*in = new java.io.BufferedInputStream(socket.getInputStream());
+            byte[] b = new byte[1024];
+            String data = "";
+            int length;
+            while ((length = in.read(b)) > 0)// <=0���ܴN�O�����F
+            {
+                data += new String(b, 0, length);
+            }
+            Log.d("Debug","�ڨ�o����:" + data);
+            //System.out.println("�ڨ�o����:" + data);
+            in.close();
+            in = null;
+			*/
+            client.close();
+            client = null;
+            Log.d("Debug","關閉socket");
+            return data;
+        } catch (java.io.IOException e) {
+            System.out.println("Socket連線有問題 !");
+            System.out.println("IOException :" + e.toString());
+            return null;
+        }
+    
+		
+		
+	}
+    
+    void updatePoints(){
+    	SharedPreferences settings = getSharedPreferences("POINTSANITY_PREF", 0);
+    	String serverResult = updateToServer("REFRESH "+settings.getString("ID", ""));
+    	if(serverResult.startsWith("REFRESHRESULT")){
+    		String[] part = serverResult.split(" ");
+    		
+    		for(int i=1;i<part.length;i+=2){
+    			settings.edit().putString(part[i].toLowerCase(), part[i+1]).commit();
+    		
+    		}
+    	}
+    	
+    }
+    boolean checkWifiStatus()    {
+    	ConnectivityManager connMgr = (ConnectivityManager)
+    	this.getSystemService(Context.CONNECTIVITY_SERVICE);
+    	android.net.NetworkInfo wifi = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+    	android.net.NetworkInfo mobile = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+    	if( wifi.isAvailable() || mobile.isAvailable()){
+    		return true;
+    	}
+    	else
+    		return false;
     }
     private void InfoUpdate(){
     	
@@ -251,6 +404,7 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
         // A handler is needed to send messages to the activity when this
         // callback occurs, because it happens from a binder thread
         mHandler.obtainMessage(MESSAGE_SENT).sendToTarget();
+        
     }
 
     /** This handler receives a message from onNdefPushComplete */
@@ -261,15 +415,22 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
             case MESSAGE_SENT:
                 Toast.makeText(getApplicationContext(), "Message sent!", Toast.LENGTH_LONG).show();
                 break;
+            case REFRESH_SUCCESS:
+        		Toast.makeText(getApplicationContext(), "已更新點數", Toast.LENGTH_SHORT).show();
+        		InfoUpdate();
+        		mRefresh.setImageResource(R.drawable.refresh_on);
+        		break;
+        	
             }
         }
     };
-
+    
     @Override
     public void onResume() {
         super.onResume();
         Log.d("Debug","Beam onResume");
-        
+        mMap.setImageResource(R.drawable.map_on);
+        mRefresh.setImageResource(R.drawable.refresh_on);
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
             
@@ -278,7 +439,21 @@ public class PointGrid extends Activity implements CreateNdefMessageCallback,OnN
         }
         else
         	mNFC.setImageResource(R.drawable.nfc_on);
-        
+        if(checkWifiStatus()){
+        	mWifi.setImageResource(R.drawable.wifi_on);
+        	
+        }
+        else
+        	mWifi.setImageResource(R.drawable.wifi_off);
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        /*if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
+            
+            mNFC.setImageResource(R.drawable.nfc_off);
+            
+        }
+        else
+        	mNFC.setImageResource(R.drawable.nfc_on);
+        */
         // Check to see that the Activity started due to an Android Beam
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             processIntent(getIntent());

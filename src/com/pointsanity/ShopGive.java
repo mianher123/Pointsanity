@@ -67,7 +67,8 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
     int session = 0;
     private static final int MESSAGE_SENT = 1;
     private static final int GET_ID = 2;
-    private static final int GET_INFO = 3;
+    private static final int INFO_SUCCESS = 3;
+    private static final int INFO_FAILED = 4;
     private static final int LOGIN_SENT = 5;
 
     @Override
@@ -189,8 +190,11 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
             	Toast.makeText(getApplicationContext(), "GET ID: "+customerID, Toast.LENGTH_LONG).show();
                 break;
             
-        	case GET_INFO:
+        	case INFO_SUCCESS:
         		Toast.makeText(getApplicationContext(), "GET INFO: "+serverResult, Toast.LENGTH_LONG).show();
+        		break;
+        	case INFO_FAILED:
+        		Toast.makeText(getApplicationContext(), "The user doesn't have enough points.", Toast.LENGTH_LONG).show();
         		break;
         	case LOGIN_SENT:
             	if(serverResult.startsWith("VERIFYRESULT")){
@@ -342,7 +346,15 @@ public class ShopGive extends Activity implements CreateNdefMessageCallback, OnN
                        				serverResult = updateToServer("REC "+customerID+" "+ShopId+" "+mPoints.getText());
                        			else
                        				serverResult = updateToServer("REC "+customerID+" "+ShopId+" "+(-10)*Integer.parseInt(""+mPoints.getText()));
-                                mHandler.obtainMessage(GET_INFO).sendToTarget();
+                       			if(serverResult.startsWith("INFO")){
+                            		String[] part = serverResult.split(" ");
+                            		if(part[1].equals("failed")){
+                            			mHandler.obtainMessage(INFO_FAILED).sendToTarget();
+                            		}
+                            		else
+                            			mHandler.obtainMessage(INFO_SUCCESS).sendToTarget();
+                       			}
+                                
                        		}  
                        		  };  	
                 		new Thread(ConnectRun).start(); 

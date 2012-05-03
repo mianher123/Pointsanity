@@ -21,25 +21,21 @@
             android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/pick" android:layout_centerHorizontal="true" android:layout_marginTop="215sp"/>
+            android:src="@drawable/pick" android:layout_centerHorizontal="true" android:layout_marginTop="235sp"/>
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/order" android:layout_centerHorizontal="true" android:layout_marginTop="355sp"/>
+        
 
         <ImageView
             android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/exchange" android:layout_centerHorizontal="true" android:layout_marginTop="285sp"/>
+            android:src="@drawable/exchange" android:layout_centerHorizontal="true" android:layout_marginTop="325sp"/>
 
         <TextView
             android:id="@+id/fbID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" android:layout_marginTop="425sp"
+            android:layout_centerHorizontal="true" android:layout_marginTop="410sp"
             android:text="Your facebook ID is:"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 

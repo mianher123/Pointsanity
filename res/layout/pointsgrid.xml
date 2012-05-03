@@ -34,17 +34,44 @@
 		    />
 
 	<RelativeLayout
-	    android:layout_width="fill_parent"
-	    android:layout_height="match_parent"
-	    android:layout_alignParentLeft="true"
-	    android:layout_below="@+id/PointsGrid" >
+	    android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
 		<ImageView
-		    android:id="@+id/nfcView"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:src="@drawable/back" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"/>
+            android:id="@+id/nfcView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="250sp"
+            android:src="@drawable/nfc_on" />
 
+        <ImageView
+            android:id="@+id/wifiView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="190sp"
+            android:src="@drawable/wifi_on" />
+
+        <ImageView
+            android:id="@+id/mapView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="70sp"
+            android:src="@drawable/map_on" />
+
+        <ImageView
+            android:id="@+id/refreshView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="130sp"
+            android:src="@drawable/refresh_on" />
 	</RelativeLayout>
 
 </RelativeLayout>

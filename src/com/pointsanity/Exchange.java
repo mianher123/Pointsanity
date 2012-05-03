@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import android.R.string;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -64,6 +65,7 @@ public class Exchange extends Activity{
 	private ArrayList<String> DisplayIDs;
 	private ArrayList<Bitmap> Photos;
 	private Facebook mFacebook;
+	private ProgressDialog progressDialog; 
 	LazyAdapter adapter;
 	int now_position;
 	private ButtonOnClick buttonOnClick;
@@ -109,6 +111,7 @@ public class Exchange extends Activity{
 					public void onComplete(Bundle values) {
 						
 						try {
+							progressDialog = ProgressDialog.show(Exchange.this, "Loading friend list...", "Please wait...", true, false);
 							Log.d("DebugLog","onComplete try");
 							mAsyncRunner.request("me",requestListener);
 							mAsyncRunner.request("me/friends",friendRequestListener);
@@ -154,7 +157,7 @@ public class Exchange extends Activity{
         		
         	}
         });
-
+        
     }//end onCreate
 	private RequestListener requestListener = new RequestListener(){
 		public void onComplete(String response,Object state){
@@ -254,7 +257,7 @@ public class Exchange extends Activity{
 				
 				for(int i=0;i<friendlist.length();i+=50){
 					String s="";
-					for(int j=0;j<50;j++){
+					for(int j=0;j<50 && (i+j)<friendlist.length();j++){
 						
 						s += (friendlist.getJSONObject(i+j).getString("id")+" ");
 					
@@ -310,7 +313,7 @@ public class Exchange extends Activity{
 					}					
 					
 				});*/
-				
+				progressDialog.dismiss();
 			}
 			catch(JSONException e){
 				e.printStackTrace();

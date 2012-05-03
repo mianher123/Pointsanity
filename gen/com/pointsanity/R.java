@@ -77,13 +77,13 @@ public final class R {
         public static final int wifi_on=0x7f02003c;
     }
     public static final class id {
-        public static final int CardInfo=0x7f06001c;
+        public static final int CardInfo=0x7f06001b;
         public static final int FriendName=0x7f06000e;
         public static final int FriendPhoto=0x7f06000d;
         public static final int ItemDist=0x7f060012;
         public static final int ItemImage=0x7f060010;
         public static final int ItemTitle=0x7f060011;
-        public static final int PointsGrid=0x7f06001b;
+        public static final int PointsGrid=0x7f06001a;
         public static final int RelativeLayout01=0x7f06000c;
         public static final int button1=0x7f060001;
         public static final int button2=0x7f060003;
@@ -92,27 +92,26 @@ public final class R {
         public static final int editText1=0x7f060002;
         public static final int enter=0x7f060015;
         public static final int exchangeList=0x7f06000a;
-        public static final int fbID=0x7f060019;
+        public static final int fbID=0x7f060018;
         public static final int imageView1=0x7f060016;
-        public static final int imageView2=0x7f060017;
-        public static final int imageView3=0x7f060018;
+        public static final int imageView3=0x7f060017;
         public static final int linearLayout1=0x7f060000;
-        public static final int list=0x7f06001f;
-        public static final int map=0x7f06001a;
-        public static final int mapView1=0x7f060022;
+        public static final int list=0x7f060022;
+        public static final int map=0x7f060019;
+        public static final int mapView1=0x7f06001f;
         public static final int nfcView=0x7f060006;
-        public static final int nfcView1=0x7f060020;
+        public static final int nfcView1=0x7f06001d;
         public static final int numberView1=0x7f060013;
         public static final int numberView2=0x7f060014;
-        public static final int refreshView1=0x7f060023;
+        public static final int refreshView1=0x7f060020;
         public static final int relativeLayout1=0x7f060004;
         public static final int shopSpinner=0x7f06000b;
-        public static final int shopView=0x7f06001d;
-        public static final int signboard=0x7f06001e;
+        public static final int shopView=0x7f06001c;
+        public static final int signboard=0x7f060021;
         public static final int textView1=0x7f060005;
         public static final int textView2=0x7f060008;
         public static final int thumbImage=0x7f06000f;
-        public static final int wifiView1=0x7f060021;
+        public static final int wifiView1=0x7f06001e;
     }
     public static final class layout {
         public static final int addpointdialog=0x7f030000;

@@ -55,7 +55,6 @@ public class PointsanityActivity extends Activity {
     /** Called when the activity is first created. */
 	private ImageView mPickBtn;
 	private ImageView mExchangeBtn;
-	private ImageView mOrderBtn;
 	private ImageView mShop;
 	private Facebook mFacebook;
 	private TextView mFBID;
@@ -86,7 +85,6 @@ public class PointsanityActivity extends Activity {
        
         
         mPickBtn = (ImageView) findViewById(R.id.imageView1);
-        mOrderBtn = (ImageView) findViewById(R.id.imageView2);
         mExchangeBtn = (ImageView) findViewById(R.id.imageView3);
         mShop = (ImageView) findViewById(R.id.button1);
         mFBID = (TextView) findViewById(R.id.fbID);
@@ -94,7 +92,6 @@ public class PointsanityActivity extends Activity {
         mEnter = (TextView) findViewById(R.id.enter);
         
         mPickBtn.setVisibility(View.INVISIBLE);
-        mOrderBtn.setVisibility(View.INVISIBLE);
         mExchangeBtn.setVisibility(View.INVISIBLE);
         mFBID.setVisibility(View.INVISIBLE);
         //mTitle.setVisibility(View.INVISIBLE);
@@ -108,7 +105,6 @@ public class PointsanityActivity extends Activity {
        		mFBID.setText("Hello, "+FBNAME);
 			mPickBtn.setVisibility(View.VISIBLE);
 	        mExchangeBtn.setVisibility(View.VISIBLE);
-	        mOrderBtn.setVisibility(View.VISIBLE);
 	        mFBID.setVisibility(View.VISIBLE);
 	        mEnter.setVisibility(View.INVISIBLE);
        		
@@ -198,16 +194,7 @@ public class PointsanityActivity extends Activity {
         		
         	};
        	});
-       	mOrderBtn.setOnClickListener(new OnClickListener(){
-        	public void onClick(View arg0) {
-        		mOrderBtn.setImageResource(R.drawable.order_down);
-        		Log.d("Debug","In mOrder");
-        		Intent intent = new Intent();
-		    	intent.setClass(PointsanityActivity.this,Beam.class);
-		    	startActivity(intent);
-        		
-        	};
-       	});
+       	
        	
         		
        	
@@ -347,7 +334,6 @@ public class PointsanityActivity extends Activity {
         mPickBtn.setImageResource(R.drawable.pick);
         mExchangeBtn.setImageResource(R.drawable.exchange);
         mShop.setImageResource(R.drawable.imshop);
-        mOrderBtn.setImageResource(R.drawable.order);
         Log.d("Debug","PointsanityActivity onResume");
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
         	Log.d("Debug","PointsanityActivity onResume1");
@@ -376,7 +362,6 @@ public class PointsanityActivity extends Activity {
 						mFBID.setText("Hello, "+name);
 						mPickBtn.setVisibility(View.VISIBLE);
 				        mExchangeBtn.setVisibility(View.VISIBLE);
-				        mOrderBtn.setVisibility(View.VISIBLE);
 				        mFBID.setVisibility(View.VISIBLE);
 				        //mTitle.setVisibility(View.VISIBLE);
 				        mEnter.setVisibility(View.INVISIBLE);
